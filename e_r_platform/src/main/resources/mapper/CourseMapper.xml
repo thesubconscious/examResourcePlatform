@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.e_r_platform.mapper.CourseMapper">
+
+    <resultMap id="BaseResultMap" type="com.e_r_platform.model.Course">
+            <id property="course_id" column="course_id" jdbcType="INTEGER"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="teacher_id" column="teacher_id" jdbcType="INTEGER"/>
+    </resultMap>
+
+<!--    <sql id="Base_Column_List">-->
+<!--        course_id,name,teacher_id-->
+<!--    </sql>-->
+
+    <insert id="create">
+        insert into course (name,teacher_id) values (#{name}, #{teacher_id})
+    </insert>
+
+    <update id="update">
+        update course
+        <set>
+            <if test="name != null">name = #{name}</if>
+            <if test="teacher_id != null">teacher_id = #{teacher_id}</if>
+        </set>
+        where course_id = #{course_id}
+    </update>
+
+    <delete id="deleteByCourse_id">
+        delete from course where course_id = #{course_id}
+    </delete>
+
+    <select id="getAll" resultType="com.e_r_platform.model.Course">
+        select * from course
+    </select>
+
+    <select id="getOne" resultType="com.e_r_platform.model.Course">
+        select * from course where course_id = #{course_id}
+    </select>
+
+    <select id="searchByNameAndTeacherId" resultType="com.e_r_platform.model.Course">
+        select * from course
+        where name=#{name} and teacher_id = #{teacher_id}
+    </select>
+</mapper>

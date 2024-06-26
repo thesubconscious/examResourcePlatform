@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.e_r_platform.mapper.ResourceMapper">
+
+    <resultMap id="BaseResultMap" type="com.e_r_platform.model.Resource">
+            <id property="resource_id" column="resource_id" jdbcType="INTEGER"/>
+            <result property="course_id" column="course_id" jdbcType="INTEGER"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="path" column="path" jdbcType="VARCHAR"/>
+    </resultMap>
+
+<!--    <sql id="Base_Column_List">-->
+<!--        resource_id,course_id,name,-->
+<!--        path-->
+<!--    </sql>-->
+
+    <insert id="insertOne">
+        insert into resource(course_id, name, path) value (#{course_id},#{name},#{path})
+    </insert>
+    <delete id="deleteByResourceId">
+        delete from resource where resource_id = #{resource_id}
+    </delete>
+
+    <select id="searchAllByResourceId" resultType="com.e_r_platform.model.Resource">
+        select * from resource where resource_id = #{resource_id}
+    </select>
+
+    <select id="getAllByCourseId" resultType="com.e_r_platform.model.Resource">
+        select * from resource where course_id = #{course_id}
+    </select>
+
+</mapper>

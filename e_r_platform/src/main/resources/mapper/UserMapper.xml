@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.e_r_platform.mapper.UserMapper">
+
+    <resultMap id="BaseResultMap" type="com.e_r_platform.model.User">
+            <id property="user_id" column="user_id" jdbcType="INTEGER"/>
+            <result property="email" column="email" jdbcType="VARCHAR"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="password" column="password" jdbcType="VARCHAR"/>
+            <result property="identity" column="identity" jdbcType="VARCHAR"/>
+            <result property="token" column="token" jdbcType="VARCHAR"/>
+    </resultMap>
+
+<!--    <sql id="Base_Column_List">-->
+<!--        user_id,name,password,-->
+<!--        identity,token-->
+<!--    </sql>-->
+
+    <insert id="create">
+        insert into user (email, name, password, identity) values (#{email},#{name},#{password},#{identity})
+    </insert>
+
+    <select id="login" resultType="com.e_r_platform.model.User">
+        select * from user where email= #{email} and password=#{password}
+    </select>
+
+    <select id="selectUserByName" resultType="com.e_r_platform.model.User">
+        select * from user where name= #{name}
+    </select>
+
+    <select id="selectUserByEmail" resultType="com.e_r_platform.model.User">
+        select * from user where email = #{email}
+    </select>
+
+    <select id="selectUserByID" resultType="com.e_r_platform.model.User">
+        select * from user where user_id= #{id}
+    </select>
+
+    <update id="updateUserToken">
+        update user
+        set token = #{token}
+        where email = #{email}
+    </update>
+
+    <update id="updateUser">
+        update user
+        <set>
+            <if test="email != null">email = #{email},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="identity != null">identity = #{identity},</if>
+        </set>
+        where user_id = #{user_id}
+    </update>
+
+    <update id="deleteUserToken">
+        update user
+        set token = ''
+        where token = #{token}
+    </update>
+
+</mapper>

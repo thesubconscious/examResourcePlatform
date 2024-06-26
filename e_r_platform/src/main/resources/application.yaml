@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: e_r_platform
+  datasource:
+    url: jdbc:mysql://localhost:3306/e_r_platform?useSSL=false
+    username: root
+    password: 7k7kxyx@
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:sql/schema.sql
+  jpa:
+    hibernate:
+      ddl-auto: update
+  logging:
+    level:
+      org.springframework.jdbc.datasource: DEBUG
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+
+server:
+  port: 8080
+#  tomcat:
+#    max-http-form-post-size: 10MB
+#    max-swallow-size: 10MB

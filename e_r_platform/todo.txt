@@ -1,0 +1,79 @@
+1.api接口
+（老师）上传、删除文件，开/删课
+（学生/老师）注册，登录，下载
+（学生）参加课程，学习某一文件，完成对某一文件的学习
+
+用户操作
+注册：
+POST /users/register —— 创建新用户（注册）
+登录：
+POST /users/login —— 用户登录
+用户信息：
+GET /users/{userId} —— 获取用户信息
+PUT /users/{userId} —— 更新用户信息（如果需要）
+
+课程操作
+列出课程：
+GET /courses —— 列出所有课程或根据查询参数筛选课程
+创建课程（老师）：
+POST /courses —— 老师创建新课程
+获取课程详情：
+GET /courses/{courseId} —— 获取课程详细信息
+更新课程（老师）：
+PUT /courses/{courseId} —— 更新课程信息
+删除课程（老师）：
+DELETE /courses/{courseId} —— 删除课程
+
+
+获取课程中的所有学生
+GET /courses/{courseId}/students — 获取课程所有参与学生列表
+学生与课程的交互
+学生加入课程
+POST /courses/{courseId}/students — 学生加入课程
+学生退出课程
+DELETE /courses/{courseId}/students — 学生退出课程
+
+文件资源管理
+上传文件
+POST /courses/{courseId}/resources — 老师上传文件到课程
+下载文件
+GET /courses/{courseId}/resources/{resourceId} — 下载文件
+删除文件
+DELETE /courses/{courseId}/resources/{resourceId} — 老师删除文件
+列出课程所有文件
+GET /courses/{courseId}/resources — 列出课程中的所有文件
+
+学习进度管理
+标记文件学习完成
+POST /courses/{courseId}/resources/{resourceId}/completion — 学生标记文件学习完成
+查询某课程下学生的学习进度
+GET /courses/{courseId}/students/{studentId} — 查询指定学生在课程中完成的文件列表
+
+
+
+2.基本数据库表设计
+用户表（user）
+用户ID
+用户名
+密码
+用户类型（学生、老师）
+
+课程表（course）
+课程ID
+课程名称
+老师ID（引用用户表）
+
+文件资源表（resource）
+文件ID
+课程ID（引用课程表）
+文件名
+文件路径
+
+课程学生表（course_students）（记录学生和课程的对应关系）
+课程ID（引用课程表）
+学生ID（引用用户表）
+
+文件完成记录表（resource_completions）（记录学生完成文件的情况）
+文件ID（引用文件资源表）
+学生ID（引用用户表）
+完成时间

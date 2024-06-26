@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.e_r_platform.mapper.ResourceCompletionsMapper">
+
+    <resultMap id="BaseResultMap" type="com.e_r_platform.model.ResourceCompletions">
+            <result property="resource_id" column="resource_id" jdbcType="INTEGER"/>
+            <result property="student_id" column="student_id" jdbcType="INTEGER"/>
+            <result property="completion_time" column="completion_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--    <sql id="Base_Column_List">-->
+    <!--        resource_id,student_id,completion_time-->
+    <!--    </sql>-->
+
+    <insert id="insertOne">
+        insert into resource_completions values (#{resource_id}, #{student_id}, NOW())
+    </insert>
+
+    <select id="getOneByResourceIDAndStudentID" resultType="com.e_r_platform.model.ResourceCompletions">
+        select * from resource_completions where resource_id = #{resource_id} and student_id =#{student_id}
+    </select>
+
+    <select id="getResourcesByCourseIDAndStudentID" resultType="com.e_r_platform.model.Resource">
+        SELECT r.resource_id, r.name, r.path, rc.completion_time
+        FROM resource_completions rc
+        JOIN resource r ON rc.resource_id = r.resource_id
+        WHERE rc.student_id = #{student_id} AND r.course_id = #{course_id};
+    </select>
+
+
+</mapper>
