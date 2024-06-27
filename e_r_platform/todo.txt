@@ -8,9 +8,11 @@
 POST /users/register —— 创建新用户（注册）
 登录：
 POST /users/login —— 用户登录
+登出：
+POST /users/logout —— 用户登出
 用户信息：
 GET /users/{userId} —— 获取用户信息
-PUT /users/{userId} —— 更新用户信息（如果需要）
+PATCH /users/{userId} —— 更新用户信息（如果需要）
 
 课程操作
 列出课程：
@@ -20,7 +22,7 @@ POST /courses —— 老师创建新课程
 获取课程详情：
 GET /courses/{courseId} —— 获取课程详细信息
 更新课程（老师）：
-PUT /courses/{courseId} —— 更新课程信息
+PATCH /courses/{courseId} —— 更新课程信息
 删除课程（老师）：
 DELETE /courses/{courseId} —— 删除课程
 
