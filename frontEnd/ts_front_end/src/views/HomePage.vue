@@ -7,8 +7,11 @@
         <p @click="register()">注册</p>
       </div>
     </div>
+    <h1>欢迎来到考试学习资源平台</h1>
     <div class="image-container" @click="imageClicked">
+      <img src="@/assets/HomeView.jpg" alt="Shadowed Home View" class="side-image">
       <img src="@/assets/HomeView.jpg" alt="Home View" class="main-image">
+      <img src="@/assets/HomeView.jpg" alt="Shadowed Home View" class="side-image">
     </div>
     <div class="footer">
       github@thesubconscious
@@ -21,22 +24,24 @@ import { ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
+import {useRouter} from "vue-router";
 
 library.add(faUserCircle);
 
 const menuVisible = ref(false);
+const router = useRouter()
 
 const toggleMenu = () => {
   menuVisible.value = !menuVisible.value;
 };
 
 const login = () => {
-  // 实现登录逻辑
+  router.push("/Login")
   console.log("Login");
 };
 
 const register = () => {
-  // 实现注册逻辑
+  router.push("/Register")
   console.log("Register");
 };
 
@@ -49,7 +54,7 @@ const imageClicked = () => {
 .header, .footer {
   position: fixed;
   left: 0;
-  min-height: 3vh;
+  height: 3%;
   width: 100%;
   background-color: grey;
   color: white;
@@ -63,10 +68,19 @@ const imageClicked = () => {
 .footer {
   bottom: 0;
 }
+
+h1 {
+  text-align: center;
+  margin-top: 5%;
+  font-size: 2em;
+}
+
+/* icon */
 .icon {
+  height: 80%;
   position: absolute;
-  right: 10px;
-  top: 5px;
+  right: 1%;
+  top:10%;
   cursor: pointer;
 }
 .menu {
@@ -76,14 +90,29 @@ const imageClicked = () => {
   position: absolute;
   right: 10px;
   top: 40px;
+  color: black;
 }
+.menu p:hover {
+  background-color: lightgray;
+  cursor: pointer;
+}
+
+/* 图片 */
 .image-container {
-  padding-top: 40px;
   text-align: center;
+  margin: 3% 0 3% 0;
 }
 .main-image {
-  max-width: 100%;
+  max-width: 40%;
+  min-height: 60%;
   height: auto;
-  display: inline-block; /* To center in the container */
+  display: inline-block;
+}
+.side-image {
+  max-width: 30%;
+  height: auto;
+  display: inline-block;
+  opacity: 0.8;
+  filter: blur(8px);
 }
 </style>
