@@ -4,6 +4,8 @@ import com.e_r_platform.model.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Optional;
+
 /**
 * @author Administrator
 * @description 针对表【user】的数据库操作Mapper
@@ -19,11 +21,9 @@ public interface UserMapper extends BaseMapper<User> {
     User login(@Param("email") String email, @Param("password") String password);
 
     User selectUserByName(@Param("name") String name);
-    User selectUserByEmail(@Param("email") String email);
+    Optional<User> selectUserByEmail(@Param("email") String email);
 
     User selectUserByID(@Param("id") int user_id);
-
-    int updateUserToken(@Param("email") String email, @Param("token") String token);
 
     int updateUser(@Param("user_id") int user_id, @Param("email") String email, @Param("name") String name,
                    @Param("password") String password,

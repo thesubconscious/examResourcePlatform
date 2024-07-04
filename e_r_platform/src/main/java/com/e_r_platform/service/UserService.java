@@ -9,5 +9,4 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2024-04-27 15:42:34
 */
 public interface UserService extends IService<User> {
-    String login(String name, String password);
 }

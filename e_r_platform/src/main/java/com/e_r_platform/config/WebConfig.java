@@ -20,6 +20,8 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")            // 允许对所有API的跨域请求
                 .allowedOrigins("http://localhost:5173")  // 允许来自该源的请求
-                .allowedMethods("GET", "POST", "PATCH", "DELETE"); // 允许具体的HTTP方法
+                .allowCredentials(true)
+                .allowedMethods("GET", "POST", "PATCH", "PUT", "DELETE"); // 允许具体的HTTP方法
+
     }
 }
