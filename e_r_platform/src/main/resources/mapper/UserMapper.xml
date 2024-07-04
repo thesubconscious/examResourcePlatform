@@ -10,7 +10,6 @@
             <result property="name" column="name" jdbcType="VARCHAR"/>
             <result property="password" column="password" jdbcType="VARCHAR"/>
             <result property="identity" column="identity" jdbcType="VARCHAR"/>
-            <result property="token" column="token" jdbcType="VARCHAR"/>
     </resultMap>
 
 <!--    <sql id="Base_Column_List">-->
@@ -37,12 +36,6 @@
     <select id="selectUserByID" resultType="com.e_r_platform.model.User">
         select * from user where user_id= #{id}
     </select>
-
-    <update id="updateUserToken">
-        update user
-        set token = #{token}
-        where email = #{email}
-    </update>
 
     <update id="updateUser">
         update user
