@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.e_r_platform.mapper.UserMapper;
 import com.e_r_platform.model.User;
 import com.e_r_platform.service.impl.UserServiceImpl;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,23 +50,24 @@ public class UserController {
 
     //login
     @PostMapping("/login")
-    public ResponseEntity<?> handleUserLogin(@RequestBody User user){
-        String token = userService.login(user.getEmail(),user.getPassword());
-        if(token != null)
-            return ResponseEntity.ok(token);
-        else
+    public ResponseEntity<?> handleUserLogin(@RequestBody User user, HttpServletResponse response) {
+        String token = userService.login(user.getEmail(), user.getPassword());
+        if (token != null) {
+            Cookie jwtCookie = new Cookie("JWT_TOKEN", token);
+            jwtCookie.setHttpOnly(true);
+            jwtCookie.setPath("/");
+            jwtCookie.setMaxAge(60 * 60); // 有效期为1小时
+            response.addCookie(jwtCookie);
+            return ResponseEntity.ok("Login success");
+        } else {
             return ResponseEntity.badRequest().body("User does not exist");
+        }
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> handleUserLogOut(@RequestBody User user){
-        int result = userService.logOut(user.getToken());
-        if(result != 0){
-            return ResponseEntity.ok("Logout success");
-        }
-        else{
-            return ResponseEntity.badRequest().body("User does not exist");
-        }
+    public ResponseEntity<?> handleUserLogOut(HttpServletResponse response){
+        userService.logOut(response);
+        return ResponseEntity.ok("Logout success");
     }
 
 

@@ -12,7 +12,6 @@ create table if not exists `user`(
     `email` varchar(255),
     `password` varchar(255),
     `identity` varchar(255),
-    `token` varchar(255),
     primary key (`user_id`)
 );
 

@@ -8,14 +8,14 @@ import java.io.Serializable;
 import lombok.Data;
 
 /**
- * 
+ *
  * @TableName user
  */
 @TableName(value ="user")
 @Data
 public class User implements Serializable {
     /**
-     * 
+     *
      */
     @TableId(type = IdType.AUTO)
     private Integer user_id;
@@ -26,24 +26,20 @@ public class User implements Serializable {
     private String email;
 
     /**
-     * 
+     *
      */
     private String name;
 
     /**
-     * 
+     *
      */
     private String password;
 
     /**
-     * 
+     *
      */
     private String identity;
 
-    /**
-     * 
-     */
-    private String token;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
@@ -64,8 +60,7 @@ public class User implements Serializable {
                 && (this.getEmail() == null ? other.getEmail() == null : this.getEmail().equals(other.getEmail()))
                 && (this.getName() == null ? other.getName() == null : this.getName().equals(other.getName()))
                 && (this.getPassword() == null ? other.getPassword() == null : this.getPassword().equals(other.getPassword()))
-                && (this.getIdentity() == null ? other.getIdentity() == null : this.getIdentity().equals(other.getIdentity()))
-                && (this.getToken() == null ? other.getToken() == null : this.getToken().equals(other.getToken()));
+                && (this.getIdentity() == null ? other.getIdentity() == null : this.getIdentity().equals(other.getIdentity()));
     }
 
     @Override
@@ -91,7 +86,6 @@ public class User implements Serializable {
         sb.append(", name=").append(name);
         sb.append(", password=").append(password);
         sb.append(", identity=").append(identity);
-        sb.append(", token=").append(token);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();
