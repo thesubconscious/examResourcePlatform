@@ -23,6 +23,7 @@ public class SecurityConfig {
                         .requestMatchers("/users/login").permitAll()
                         .requestMatchers("/users/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users").hasAuthority("admin")
+                        .requestMatchers(HttpMethod.GET, "/users/{id}").hasAuthority("admin")
 //                        .requestMatchers("/users/login").hasAuthority("admin")
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

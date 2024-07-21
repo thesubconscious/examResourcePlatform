@@ -7,6 +7,8 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,6 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtHandler jwtHandler;
+    private static final Logger log = LoggerFactory.getLogger(JwtHandler.class);
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -39,7 +42,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             });
         } catch (AuthenticationException ex) {
-            SecurityContextHolder.clearContext(); // 保证一旦认证失败，不保持状态
+            log.error("AuthenticationException: {}", ex.getMessage());
+            SecurityContextHolder.clearContext();
         }
 
         filterChain.doFilter(request, response);
