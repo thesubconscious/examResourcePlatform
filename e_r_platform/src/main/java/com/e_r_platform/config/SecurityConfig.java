@@ -1,20 +1,30 @@
 package com.e_r_platform.config;
 
-import com.e_r_platform.controller.JwtAuthenticationFilter;
+import com.e_r_platform.controller.Authorization.CustomAuthorizationManager;
+import com.e_r_platform.controller.Authorization.JwtAuthenticationFilter;
+import com.e_r_platform.controller.Authorization.JwtHandler;
+import com.e_r_platform.model.User;
+import com.e_r_platform.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authorization.AuthorizationDecision;
+import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.util.function.Supplier;
 
 @Configuration
 public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
+    @Autowired
+    private CustomAuthorizationManager customAuthorizationManager;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -23,8 +33,7 @@ public class SecurityConfig {
                         .requestMatchers("/users/login").permitAll()
                         .requestMatchers("/users/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.GET, "/users/{id}").hasAuthority("admin")
-//                        .requestMatchers("/users/login").hasAuthority("admin")
+                        .requestMatchers(HttpMethod.GET, "/users/{id}").access(customAuthorizationManager)
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

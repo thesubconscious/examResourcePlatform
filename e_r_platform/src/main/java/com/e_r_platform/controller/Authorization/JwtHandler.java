@@ -1,4 +1,4 @@
-package com.e_r_platform.controller;
+package com.e_r_platform.controller.Authorization;
 
 import com.e_r_platform.service.impl.CustomUserDetailService;
 import io.jsonwebtoken.*;
@@ -67,4 +67,8 @@ public class JwtHandler {
         return false;
     }
 
+    public boolean checkUser(Authentication authentication, String email) {
+        String currentUser = authentication.getName();
+        return currentUser.equals(email);
+    }
 }

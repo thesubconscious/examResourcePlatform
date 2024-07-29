@@ -1,13 +1,10 @@
 package com.e_r_platform.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.e_r_platform.controller.JwtHandler;
+import com.e_r_platform.controller.Authorization.JwtHandler;
 import com.e_r_platform.model.User;
 import com.e_r_platform.service.UserService;
 import com.e_r_platform.mapper.UserMapper;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;

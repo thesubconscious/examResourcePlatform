@@ -14,10 +14,8 @@ const handleLogin = async ({ email, password, isLoading }:LoginForm) => {
 
   isLoading.value = true;
   try {
-    const userData = await userService.login(email, password);
-    document.cookie = "userID="+userData.token+";";
-    document.cookie = "path=/;HttpOnly;SameSite=Strict";
-    alert("login successfully")
+    const result = await userService.login(email, password);
+    alert(result)
     // router.push({ name: 'dashboard' });
   } catch (error) {
     console.error('API请求失败', error);
