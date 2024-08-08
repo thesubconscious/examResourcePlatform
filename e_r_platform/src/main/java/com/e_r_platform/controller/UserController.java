@@ -57,7 +57,15 @@ public class UserController {
             jwtCookie.setHttpOnly(true);
             jwtCookie.setPath("/");
             jwtCookie.setMaxAge(60 * 60); // 有效期为1小时
+
+            int userId = userService.getUserID(user.getEmail());
+            Cookie userIdCookie = new Cookie("USER_ID", ""+userId);
+            userIdCookie.setHttpOnly(false); // 普通Cookie，前端可访问
+            userIdCookie.setPath("/");
+            userIdCookie.setMaxAge(60 * 60); // 有效期为1小时
+
             response.addCookie(jwtCookie);
+            response.addCookie(userIdCookie);
             return ResponseEntity.ok("Login success");
         } else {
             return ResponseEntity.badRequest().body("User does not exist");

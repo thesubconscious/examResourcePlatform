@@ -28,4 +28,21 @@ export class UserService{
             throw err;
         }
     }
+
+    async getUserDetails(id: string): Promise<any> {
+        try{
+            const response = await axios.get(this.baseUrl+'/users/'+id, {
+            });
+            return response.data;
+        }catch (err){
+            throw err;
+        }
+    }
+
+    getCookie(name: string): string | null {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop()!.split(';').shift()!;
+        return null;
+    }
 }

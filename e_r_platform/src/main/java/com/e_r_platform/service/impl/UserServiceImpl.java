@@ -77,6 +77,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         return user;
     }
 
+    public int getUserID(String email){
+        Optional<User> user = userMapper.selectUserByEmail(email);
+        return user.get().getUser_id();
+    }
+
     public int update(User user){
         int result = userMapper.updateUser(user.getUser_id(), user.getEmail(),user.getName(),user.getPassword(),
                 user.getIdentity());
