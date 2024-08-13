@@ -2,8 +2,10 @@
 import { UserService } from '@/services/userService';
 import Modal from '@/components/Modal.vue';
 import {onMounted, ref} from "vue";
+import {useRouter} from "vue-router";
 
 const userService = new UserService();
+const router = useRouter();
 
 const userDetails = ref({
   userId: '',
@@ -25,10 +27,7 @@ onMounted(async () => {
 });
 
 const is_teacher = () => {
-  if(userDetails.value.identity == 'teacher'){
-    return true;
-  }
-  return false;
+  return userDetails.value.identity == 'teacher';
 }
 
 const openModal = (type: string) => {
@@ -36,8 +35,14 @@ const openModal = (type: string) => {
   showModal.value = true;
 }
 
-const closeModal = (type: string) => {
+const closeModal = () => {
   showModal.value = false;
+}
+
+const logout = () => {
+  let message = userService.logout();
+  //TODO： 用Modal做个消息框
+  router.push("/");
 }
 </script>
 

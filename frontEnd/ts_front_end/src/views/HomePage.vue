@@ -13,6 +13,11 @@
       <img src="@/assets/HomeView.jpg" alt="Home View" class="main-image">
       <img src="@/assets/HomeView.jpg" alt="Shadowed Home View" class="side-image">
     </div>
+
+    <div v-if="showModal">
+      <Modal :showModal="showModal" @closeModal="closeModal" :modalType="modalType" />
+    </div>
+
     <div class="footer">
       github@thesubconscious
     </div>
@@ -24,26 +29,33 @@ import { ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import {useRouter} from "vue-router";
-
 library.add(faUserCircle);
+import {useRouter} from "vue-router";
+import Modal from "@/components/Modal.vue";
+
+const router = useRouter()
 
 const menuVisible = ref(false);
-const router = useRouter()
+const showModal = ref(false);
+const modalType = ref('');
 
 const toggleMenu = () => {
   menuVisible.value = !menuVisible.value;
 };
 
 const login = () => {
-  router.push("/Login")
-  console.log("Login");
+  modalType.value = 'login';
+  showModal.value = true;
 };
 
 const register = () => {
-  router.push("/Register")
-  console.log("Register");
+  modalType.value = 'register';
+  showModal.value = true;
 };
+
+const closeModal = () => {
+  showModal.value = false;
+}
 
 const imageClicked = () => {
   console.log('Image Clicked');

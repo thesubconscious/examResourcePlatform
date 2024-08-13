@@ -18,8 +18,19 @@ const formData = ref({
 });
 
 const emit = defineEmits(['submit']);
-const handleSubmit = async () => {
-  emit('submit', { ...formData.value, isLoading });
+
+// const handleSubmit = async () => {
+//   emit('submit', { ...formData.value, isLoading });
+// };
+const handleSubmit = () => {
+  emit('submit');
+  if (props.isLogin) {
+    // 登录逻辑
+    console.log('Logging in with', formData.value);
+  } else {
+    // 注册逻辑
+    console.log('Registering with', formData.value);
+  }
 };
 </script>
 

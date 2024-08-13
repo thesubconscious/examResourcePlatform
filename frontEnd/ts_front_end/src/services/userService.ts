@@ -3,6 +3,13 @@ import axios from 'axios';
 export class UserService{
     private baseUrl :string = "http://localhost:8080/users"
 
+    getCookie(name: string): string | null {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop()!.split(';').shift()!;
+        return null;
+    }
+
     async login(email: string, password: string): Promise<any> {
         try{
             const response = await axios.post(this.baseUrl+'/login', {
@@ -39,10 +46,13 @@ export class UserService{
         }
     }
 
-    getCookie(name: string): string | null {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop()!.split(';').shift()!;
-        return null;
+    async logout() {
+        try{
+            const response = await axios.post(this.baseUrl+'/logout', {
+            });
+            return response.data;
+        }catch (err){
+            throw err;
+        }
     }
 }
