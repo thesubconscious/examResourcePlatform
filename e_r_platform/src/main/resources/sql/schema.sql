@@ -1,4 +1,4 @@
-use e_r_platform;
+use  e_r_platform;
 
 # DROP TABLE IF EXISTS `resource_completions`;
 # DROP TABLE IF EXISTS `course_students`;

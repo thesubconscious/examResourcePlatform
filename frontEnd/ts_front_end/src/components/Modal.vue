@@ -10,17 +10,10 @@ library.add(faTimes);
 
 const props = defineProps({
   showModal:Boolean,
-  modalType:String
+  modalType:String,
+  message:String,
 })
-const form_data = ref({
-  name: '',
-  email: '',
-  password:'',
 
-  title: '',
-  author: '',
-  article_text: '',
-});
 const showMessage = ref(false);
 const messageText = ref('');
 
@@ -31,18 +24,13 @@ const emit = defineEmits<{
 const closeModal = () => {
   emit('closeModal'); //通知父组件modal被关闭
 
-  //reset
-  form_data.value = {
-    name: '',
-    email: '',
-    password:'',
-
-    title: '',
-    author: '',
-    article_text: '',
-  };
   showMessage.value = false;
   messageText.value = '';
+}
+
+const handleLRFailure = (errorMessage: string) => {
+  messageText.value = errorMessage;
+  showMessage.value = true;
 }
 </script>
 
@@ -50,8 +38,6 @@ const closeModal = () => {
   <div v-if="showModal" class="modal-overlay">
     <div class="modal-container">
       <div class="modal-header">
-<!--        <h2 v-if="modalType === 'createArticle' || modalType === 'register'">{{ modalType === 'createArticle' ? 'Create Article' : 'Register New User' }}</h2>-->
-<!--        <span @click="closeModal" class="close-button">X</span>-->
         <font-awesome-icon @click="closeModal" :icon="['fas', 'times']" class="close-button" />
       </div>
 
@@ -59,7 +45,16 @@ const closeModal = () => {
         <div v-if="modalType === 'login' || modalType === 'register'">
           <login-register-form
               :isLogin = "modalType === 'login'"
+              @LRFail = "handleLRFailure"
           />
+        </div>
+
+        <div v-if="modalType === 'createCourse'">
+          //TODO: Add Course Form
+        </div>
+
+        <div v-if="modalType === 'displayMessage'">
+          //TODO: display message
         </div>
       </div>
 
@@ -91,6 +86,11 @@ const closeModal = () => {
   width: 40%;
   min-height: 30%;
 }
+@media (max-width: 500px){
+  .modal-container {
+    width: 80%;
+  }
+}
 
 .modal-header {
   display: flex;
@@ -117,15 +117,6 @@ input, textarea {
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
-}
-
-.submit-button {
-  background-color: #4caf50;
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
 }
 
 .message {

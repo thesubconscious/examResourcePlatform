@@ -2,6 +2,8 @@ package com.e_r_platform.controller;
 
 import com.e_r_platform.model.Course;
 import com.e_r_platform.service.impl.CourseServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +21,11 @@ public class CourseController {
     @Autowired
     private CourseServiceImpl courseService;
 
+//    private static final Logger logger = LoggerFactory.getLogger(CourseController.class);
+
     @GetMapping
     public ResponseEntity<?> handleGetAllCourse(){
+//        logger.info("here");
         ArrayList<Course> list = courseService.getAll();
         if(list!=null)
             return ResponseEntity.ok(list);

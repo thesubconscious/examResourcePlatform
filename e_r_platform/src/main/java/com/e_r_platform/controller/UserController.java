@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -53,20 +55,20 @@ public class UserController {
     public ResponseEntity<?> handleUserLogin(@RequestBody User user, HttpServletResponse response) {
         String token = userService.login(user.getEmail(), user.getPassword());
         if (token != null) {
-            Cookie jwtCookie = new Cookie("JWT_TOKEN", token);
-            jwtCookie.setHttpOnly(true);
-            jwtCookie.setPath("/");
-            jwtCookie.setMaxAge(60 * 60); // 有效期为1小时
+            ResponseCookie cookie_jwt = userService.setCookie("JWT_TOKEN", token, true);
+            response.addHeader(HttpHeaders.SET_COOKIE, cookie_jwt.toString());
 
             int userId = userService.getUserID(user.getEmail());
-            Cookie userIdCookie = new Cookie("USER_ID", ""+userId);
-            userIdCookie.setHttpOnly(false); // 普通Cookie，前端可访问
-            userIdCookie.setPath("/");
-            userIdCookie.setMaxAge(60 * 60); // 有效期为1小时
+//            ResponseCookie cookie_uid = userService.setCookie("USER_ID", ""+userId);
+//            response.addHeader(HttpHeaders.SET_COOKIE, cookie_uid.toString());
 
-            response.addCookie(jwtCookie);
-            response.addCookie(userIdCookie);
-            return ResponseEntity.ok("Login success");
+            Map<String, Object> body = new HashMap<>();
+            body.put("message", "Login success");
+            body.put("status", "success");
+            body.put("userId", userId);
+            body.put("token", token);//todo：找时间改了
+            body.put("timestamp", System.currentTimeMillis());
+            return ResponseEntity.ok(body);
         } else {
             return ResponseEntity.badRequest().body("User does not exist");
         }

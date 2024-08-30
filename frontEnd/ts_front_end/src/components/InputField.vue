@@ -32,3 +32,18 @@ onMounted(() => {
     <input :id="id" :type="type" v-model="computedValue" />
   </div>
 </template>
+
+<style scoped>
+.input-field input {
+  /*padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 3px solid #000000;*/
+  transition: border-color 0.4s ease;
+}
+
+.input-field input:focus {
+  border-color: #007BFF;
+  outline: none;
+}
+</style>

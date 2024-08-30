@@ -9,6 +9,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -43,6 +44,35 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         return existedUser;
     }
 
+    public ResponseCookie setCookie(String name, String value, Boolean httpOnly, String path, int maxAge) {
+        return ResponseCookie.from(name, value)
+                .path(path)
+                .maxAge(maxAge)
+                .httpOnly(httpOnly)
+                .sameSite("None")
+//                .secure(true)
+                .build();
+    }
+    public ResponseCookie setCookie(String name, String value) {
+        return setCookie(name, value, false,"/", 60 * 60 * 24);
+    }
+    public ResponseCookie setCookie(String name, String value, Boolean httpOnly) {
+        return setCookie(name, value, httpOnly,"/", 60 * 60 * 24);
+    }
+
+    public ResponseCookie deleteCookie(String name, String path, Boolean httpOnly) {
+        return ResponseCookie.from(name, "")
+                .path(path)
+                .maxAge(0) // 设置maxAge为0表示删除Cookie
+                .httpOnly(httpOnly)
+                .sameSite("None")
+//                .secure(true)
+                .build();
+    }
+    public ResponseCookie deleteCookie(String name) {
+        return deleteCookie(name,"/",false);
+    }
+
     public int register(User user){
         User existedUser =  checkUserStorage(user);
         if(existedUser!=null){
@@ -65,11 +95,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     }
 
     public void logOut(HttpServletResponse response){
-        Cookie jwtCookie = new Cookie("JWT_TOKEN", null);
-        jwtCookie.setHttpOnly(true);
-        jwtCookie.setPath("/");
-        jwtCookie.setMaxAge(0);
-        response.addCookie(jwtCookie);
+        deleteCookie("JWT_TOKEN");
+//        deleteCookie("USER_ID");
     }
 
     public User getOne(int user_id){

@@ -33,8 +33,14 @@ public class SecurityConfig {
                         .requestMatchers("/users/login").permitAll()
                         .requestMatchers("/users/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.GET, "/users/{id}").access(customAuthorizationManager)
-                        .anyRequest().authenticated())
+//                        .requestMatchers(HttpMethod.POST, "/courses").hasAuthority("teacher")
+//                        .requestMatchers(HttpMethod.PATCH, "/courses/{id}").hasAuthority("teacher")
+//                        .requestMatchers(HttpMethod.DELETE, "/courses/{id}").hasAuthority("teacher")
+//                        .requestMatchers(HttpMethod.POST, "/courses/{courseId}/resources").hasAuthority("teacher")
+//                        .requestMatchers(HttpMethod.DELETE, "/courses/{courseId}/resources/{resourceId}").hasAuthority("teacher")
+//                        .requestMatchers(HttpMethod.GET, "/users/{id}").access(customAuthorizationManager)
+                        .anyRequest().authenticated()
+                )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

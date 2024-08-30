@@ -1,9 +1,12 @@
 package com.e_r_platform.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.e_r_platform.controller.UserController;
 import com.e_r_platform.model.Course;
 import com.e_r_platform.service.CourseService;
 import com.e_r_platform.mapper.CourseMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +24,12 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course>
     @Autowired
     private CourseMapper courseMapper;
 
+    private static final Logger logger = LoggerFactory.getLogger(CourseServiceImpl.class);
+
     public ArrayList<Course> getAll(){
         ArrayList<Course> list = courseMapper.getAll();
+//        logger.info(list.toString());
+        System.out.println(list);
         return list;
     }
 

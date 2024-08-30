@@ -9,9 +9,11 @@
     </div>
     <h1>欢迎来到考试学习资源平台</h1>
     <div class="image-container" @click="imageClicked">
-      <img src="@/assets/HomeView.jpg" alt="Shadowed Home View" class="side-image">
-      <img src="@/assets/HomeView.jpg" alt="Home View" class="main-image">
-      <img src="@/assets/HomeView.jpg" alt="Shadowed Home View" class="side-image">
+      <button @click="prevImage" class="arrow left-arrow">◀</button>
+      <img :src="images[Object.keys(images)[curr_left]].default" alt="Shadowed Home View" class="side-image">
+      <img :src="images[Object.keys(images)[curr_main]].default" alt="Home View" class="main-image">
+      <img :src="images[Object.keys(images)[curr_right]].default" alt="Shadowed Home View" class="side-image">
+      <button @click="nextImage" class="arrow right-arrow">▶</button>
     </div>
 
     <div v-if="showModal">
@@ -25,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import {computed, ref} from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -41,6 +43,32 @@ const modalType = ref('');
 
 const toggleMenu = () => {
   menuVisible.value = !menuVisible.value;
+};
+
+const images = import.meta.glob('@/assets/HomeView*.jpg', { eager: true }) as Record<string, { default: string }>;
+const imageCount = Object.keys(images).length;
+const currentImageIndex = ref(0);
+
+// 计算当前的左侧和右侧图片索引
+const curr_main = ref(currentImageIndex.value);
+const curr_left = ref((currentImageIndex.value - 1 + imageCount) % imageCount);
+const curr_right = ref((currentImageIndex.value + 1) % imageCount);
+// console.log(images[Object.keys(images)[curr_main.value]].default)
+// 更新图片索引和图片显示
+const updateImages = () => {
+  curr_main.value = currentImageIndex.value;
+  curr_left.value = (currentImageIndex.value - 1 + imageCount) % imageCount;
+  curr_right.value = (currentImageIndex.value + 1) % imageCount;
+};
+
+const nextImage = () => {
+  currentImageIndex.value = (currentImageIndex.value + 1) % imageCount;
+  updateImages();
+};
+
+const prevImage = () => {
+  currentImageIndex.value = (currentImageIndex.value - 1 + imageCount) % imageCount;
+  updateImages();
 };
 
 const login = () => {
@@ -83,7 +111,7 @@ const imageClicked = () => {
 
 h1 {
   text-align: center;
-  margin-top: 5%;
+  margin-top: 5vh;
   font-size: 2em;
 }
 
@@ -109,22 +137,66 @@ h1 {
   cursor: pointer;
 }
 
+/* 箭头 */
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  z-index: 10; /* 确保箭头位于图片之上 */
+  pointer-events: auto; /* 确保箭头可以点击 */
+}
+
+.left-arrow {
+  left: 3%;
+}
+
+.right-arrow {
+  right: 3%;
+}
+
 /* 图片 */
 .image-container {
+  min-height: 60vh;
   text-align: center;
-  margin: 3% 0 3% 0;
+  margin: 3vh 0 3vh 0;
 }
 .main-image {
   max-width: 40%;
-  min-height: 60%;
+  /*min-height: 60%;*/
   height: auto;
   display: inline-block;
 }
 .side-image {
+  z-index: 1; /* 确保侧边图片在箭头下方 */
   max-width: 30%;
   height: auto;
   display: inline-block;
   opacity: 0.8;
   filter: blur(8px);
+}
+
+@media (max-width: 500px){
+  .main-image {
+    max-width: 80%;
+    min-height: 60vh;
+    height: auto;
+    display: inline-block;
+    /*opacity: 0.8;
+    filter: blur(2px);*/
+  }
+  .side-image {
+    z-index: 1; /* 确保侧边图片在箭头下方 */
+    max-width: 10%;
+    /*height: auto;*/
+    min-height: 50vh;
+    display: inline-block;
+    opacity: 0.8;
+    filter: blur(8px);
+  }
 }
 </style>

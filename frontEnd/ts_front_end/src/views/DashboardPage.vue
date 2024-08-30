@@ -15,14 +15,15 @@ const userDetails = ref({
   identity: ''
 });
 const modalType = ref('')
+const message = ref()
 const showModal = ref(false)
 
 onMounted(async () => {
-  const userId = userService.getCookie('USER_ID');
+  const userId = localStorage.getItem("userId");
   if (userId) {
     userDetails.value = await userService.getUserDetails(userId);
   } else {
-    console.error('用户未登录或缺少 userId');
+    console.error('用户未登录或缺少userId');
   }
 });
 
@@ -37,29 +38,35 @@ const openModal = (type: string) => {
 
 const closeModal = () => {
   showModal.value = false;
+
+  if(modalType.value == 'displayMessage') {
+    // router.push("/");
+    window.location.replace('#/');
+  }
 }
 
 const logout = () => {
-  let message = userService.logout();
+  let result = userService.logout()
+  modalType.value = 'displayMessage';
+  message.value = result;
   //TODO： 用Modal做个消息框
-  router.push("/");
 }
 </script>
 
 <template>
   <div class="dashboard-container">
+    //TODO: 头像
     <h2>Welcome to Your Dashboard!</h2>
 
     <div v-if="userDetails" class="user-details">
-      <p>User ID: {{ userDetails.userId }}</p>
+<!--      <p>User ID: {{ userDetails.userId }}</p>-->
       <p>Name: {{ userDetails.name }} </p>
       <p>Email: {{ userDetails.email }}</p>
       <p>Identity: {{ userDetails.identity }}</p>
     </div>
 
     <div v-if="is_teacher" class="admin-actions">
-      <button @click="openModal('createArticle')" class="action-button">Create Article</button>
-      <button @click="openModal('register')" class="action-button">Register New User</button>
+      <button @click="openModal('createCourse')" class="action-button">Create Course</button>
     </div>
 
     <!--    <div v-else class="admin-actions">-->
@@ -69,7 +76,12 @@ const logout = () => {
     <button @click="logout" class="logout-button">Logout</button>
 
     <div v-if="showModal">
-      <Modal :showModal="showModal" @closeModal="closeModal" :modalType="modalType" />
+      <Modal
+          :showModal="showModal"
+          @closeModal="closeModal"
+          :modalType="modalType"
+          :message="message"
+      />
     </div>
   </div>
 </template>
