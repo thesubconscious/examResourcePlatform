@@ -49,7 +49,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
                 .path(path)
                 .maxAge(maxAge)
                 .httpOnly(httpOnly)
-                .sameSite("None")
+//                .sameSite("None")
 //                .secure(true)
                 .build();
     }
@@ -65,7 +65,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
                 .path(path)
                 .maxAge(0) // 设置maxAge为0表示删除Cookie
                 .httpOnly(httpOnly)
-                .sameSite("None")
+//                .sameSite("None")
 //                .secure(true)
                 .build();
     }

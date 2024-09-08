@@ -1,8 +1,9 @@
 import axios, {AxiosError} from 'axios';
+axios.defaults.withCredentials = true;
 
 export class UserService{
-    // private baseUrl :string = "http://localhost:8080"
-    private baseUrl :string = "http://1.94.115.38:8080"
+    private baseUrl :string = "http://localhost:8080"
+    // private baseUrl :string = "http://1.94.115.38:8080"
 
     getCookie(name: string): string | null {
         const value = `; ${document.cookie}`;
@@ -17,8 +18,6 @@ export class UserService{
             const response = await axios.post(this.baseUrl+'/users/login', {
                 email,
                 password
-            },{
-                withCredentials: true,
             });
             localStorage.setItem('userId', response.data.userId);
             return response.data;
