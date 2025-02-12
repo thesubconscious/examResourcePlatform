@@ -31,18 +31,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Autowired
     private CustomUserDetailService userDetailService;
 
-    User checkUserStorage(User user){
-        String cacheKey = "user:" + user.getUser_id();
-        User existedUser = (User)redisTemplate.opsForValue().get(cacheKey);
-        if (existedUser == null) {
-            Optional<User> optionalUser = userMapper.selectUserByEmail(user.getEmail());
-            if (optionalUser.isPresent()) {
-                existedUser = optionalUser.get();
-                redisTemplate.opsForValue().set(cacheKey, existedUser); // 重新缓存数据
-            }
-        }
-        return existedUser;
-    }
+//    User checkUserStorage(User user){
+//        String cacheKey = "user:" + user.getEmail();
+//        User existedUser = (User)redisTemplate.opsForValue().get(cacheKey);
+//        if (existedUser == null) {
+//            Optional<User> optionalUser = userMapper.selectUserByEmail(user.getEmail());
+//            if (optionalUser.isPresent()) {
+//                existedUser = optionalUser.get();
+//                redisTemplate.opsForValue().set(cacheKey, existedUser); // 重新缓存数据
+//            }
+//        }
+//        User
+//        return existedUser;
+//    }
 
     public ResponseCookie setCookie(String name, String value, Boolean httpOnly, String path, int maxAge) {
         return ResponseCookie.from(name, value)
@@ -74,11 +75,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     }
 
     public int register(User user){
-        User existedUser =  checkUserStorage(user);
+        Optional<User> existedUser =  userMapper.selectUserByEmail(user.getEmail());
         if(existedUser!=null){
             return -1;
         }
-
         String email = user.getEmail();
         String name = user.getName();
         String password = user.getPassword();

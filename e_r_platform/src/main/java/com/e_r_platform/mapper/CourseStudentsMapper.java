@@ -16,6 +16,8 @@ import java.util.ArrayList;
 public interface CourseStudentsMapper extends BaseMapper<CourseStudents> {
     ArrayList<CourseStudents> getAllByCourseId(@Param("course_id") int course_id);
 
+    ArrayList<CourseStudents> getAllByStudentId(@Param("student_id") int student_id);
+
     CourseStudents getOne(@Param("course_id") int course_id, @Param("user_id") int user_id);
 
     int addNewUserToCourse(@Param("course_id") int course_id, @Param("user_id") int user_id);

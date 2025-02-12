@@ -16,7 +16,9 @@ PATCH /users/{userId} —— 更新用户信息（如果需要）
 
 课程操作
 列出课程：
-GET /courses —— 列出所有课程或根据查询参数筛选课程
+POST /courses/students/{student_id} —— 列出学生参加的所有课程 (加redis缓存）
+POST /courses/teachers/{teacher_id} —— 列出老师教导的所有课程 (加redis缓存）
+GET /courses —— 列出所有课程 (加redis缓存）
 创建课程（老师）：
 POST /courses —— 老师创建新课程
 获取课程详情：

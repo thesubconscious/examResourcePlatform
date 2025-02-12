@@ -1,7 +1,9 @@
 package com.e_r_platform.controller;
 
 import com.e_r_platform.model.Course;
+import com.e_r_platform.model.CourseStudents;
 import com.e_r_platform.service.impl.CourseServiceImpl;
+import com.e_r_platform.service.impl.CourseStudentsServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,8 @@ public class CourseController {
 
     @Autowired
     private CourseServiceImpl courseService;
+    @Autowired
+    private CourseStudentsServiceImpl courseStudentsService;
 
 //    private static final Logger logger = LoggerFactory.getLogger(CourseController.class);
 
@@ -39,17 +43,30 @@ public class CourseController {
         if(course!=null)
             return ResponseEntity.ok(course);
         else
-            return ResponseEntity.badRequest().body("There is no course.");
+            return ResponseEntity.badRequest().body("This course is not found.");
+    }
+
+    @PostMapping("/students/{student_id}")
+    public ResponseEntity<?> handleGetAllCourseForStudent(@PathVariable int student_id){
+//        logger.info("here");
+        ArrayList<CourseStudents> list = courseStudentsService.getAllCourses(student_id);
+        if(list!=null)
+            return ResponseEntity.ok(list);
+        else
+            return ResponseEntity.badRequest().body("There is no course for this student.");
     }
 
     @PostMapping
     public ResponseEntity<?> handleCreateCourse(@RequestBody Course course){
         int course_id = courseService.create(course);
         if(course_id > 0){
-            URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                    .path("/{id}")
-                    .buildAndExpand(course_id)
-                    .toUri();
+//            URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+//                    .path("/{id}")
+//                    .buildAndExpand(course_id)
+//                    .toUri();
+            URI location = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/courses/{id}")
+                    .build(course_id);
 
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put("message", "Course create successfully.");

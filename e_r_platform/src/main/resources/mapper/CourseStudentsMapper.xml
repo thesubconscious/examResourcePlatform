@@ -23,6 +23,11 @@
     <select id="getAllByCourseId" resultType="com.e_r_platform.model.CourseStudents">
         select * from course_students where course_id = #{course_id}
     </select>
+
+    <select id="getAllByStudentId" resultType="com.e_r_platform.model.CourseStudents">
+        select * from course_students where student_id = #{student_id}
+    </select>
+
     <select id="getOne" resultType="com.e_r_platform.model.CourseStudents">
         select * from course_students where course_id = #{course_id} and student_id = #{user_id}
     </select>
