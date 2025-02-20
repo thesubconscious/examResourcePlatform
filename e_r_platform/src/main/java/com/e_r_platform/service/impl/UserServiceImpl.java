@@ -95,7 +95,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     }
 
     public void logOut(HttpServletResponse response){
-        deleteCookie("JWT_TOKEN");
+        deleteCookie("JWT_TOKEN","/",true);
 //        deleteCookie("USER_ID");
     }
 

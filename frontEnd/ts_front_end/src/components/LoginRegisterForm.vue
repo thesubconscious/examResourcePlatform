@@ -77,7 +77,7 @@ div {
   margin: 0 auto;
   padding: 8px;
   border-radius: 10px;
-  background-color: #f9f9f9;
+  background-color: hsl(152.76deg 100% 94.65%);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 

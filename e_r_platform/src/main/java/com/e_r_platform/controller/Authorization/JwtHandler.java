@@ -40,11 +40,6 @@ public class JwtHandler {
                 .compact();
     }
 
-    public Authentication getAuthentication(String token) {
-        UserDetails userDetails = userDetailService.loadUserByUsername(getUsernameFromToken(token));
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-    }
-
     public String getUsernameFromToken(String token) {
         Jws<Claims> claims = Jwts.parserBuilder()
                 .setSigningKey(key)
@@ -52,6 +47,23 @@ public class JwtHandler {
                 .parseClaimsJws(token);
 
         return claims.getBody().getSubject();
+    }
+
+    public UserDetails getUserDetails(String token) {
+        return userDetailService.loadUserByUsername(getUsernameFromToken(token));
+    }
+
+    public Authentication getAuthentication(String token) {
+        UserDetails userDetails = userDetailService.loadUserByUsername(getUsernameFromToken(token));
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
+
+    public Claims parseClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     public boolean validateToken(String authToken) {
@@ -66,6 +78,7 @@ public class JwtHandler {
         }
         return false;
     }
+
 
     public boolean checkUser(Authentication authentication, String email) {
         String currentUser = authentication.getName();

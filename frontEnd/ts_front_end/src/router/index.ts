@@ -1,8 +1,7 @@
 import { createRouter, createWebHistory,createWebHashHistory } from 'vue-router'
-import LoginPage from "@/views/LoginPage.vue";
-import RegisterPage from "@/views/RegisterPage.vue";
 import HomePage from "@/views/HomePage.vue";
 import DashboardPage from "@/views/DashboardPage.vue";
+import MainPage from "@/views/MainPage.vue";
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -13,14 +12,9 @@ const router = createRouter({
       component: HomePage
     },
     {
-      path: '/login',
-      name: 'login',
-      component: LoginPage
-    },
-    {
-      path: '/register',
-      name: 'register',
-      component: RegisterPage
+      path: '/Main',
+      name: 'Main',
+      component: MainPage
     },
     {
       path: '/dashboard',

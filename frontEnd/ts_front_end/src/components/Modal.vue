@@ -53,8 +53,8 @@ const handleLRFailure = (errorMessage: string) => {
           //TODO: Add Course Form
         </div>
 
-        <div v-if="modalType === 'displayMessage'">
-          //TODO: display message
+        <div v-if="modalType === 'displayMessage'" class="displayMessage">
+          {{ props.message }}
         </div>
       </div>
 
@@ -84,7 +84,7 @@ const handleLRFailure = (errorMessage: string) => {
   padding: 20px;
   border-radius: 8px;
   width: 40%;
-  min-height: 30%;
+  min-height: 10%;
 }
 @media (max-width: 500px){
   .modal-container {
@@ -125,5 +125,22 @@ input, textarea {
   background-color: #4caf50;
   padding: 10px;
   border-radius: 4px;
+}
+
+.displayMessage {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+/*  background: rgba(255,255,255,0.9);*/
+  padding: 1.5rem 3rem;
+/*  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  border: 1px solid #eee;*/
+/*  z-index: 9999;*/
+  text-align: center;
+  font-size: 1.1em;
+/*  max-width: 80vw;
+  min-width: 300px;*/
 }
 </style>

@@ -3,11 +3,16 @@
     <div class="header">
       <FontAwesomeIcon :icon="['fas', 'user-circle']" @click="toggleMenu" class="icon"/>
       <div v-if="menuVisible" class="menu">
-        <p @click="login()">登录</p>
-        <p @click="register()">注册</p>
+        <p v-if="userExist()" @click="jumpToDashboardPage()">个人页</p>
+        <div v-else class="auth-buttons">
+          <p @click="login">登录</p>
+          <p @click="register">注册</p>
+        </div>
       </div>
     </div>
     <h1>欢迎来到考试学习资源平台</h1>
+    <h2 @click="jumpToMainPage()">点此访问主页</h2>
+<!--    <button @click="jumpToMainPage()" >访问主页</button>-->
     <div class="image-container" @click="imageClicked">
       <button @click="prevImage" class="arrow left-arrow">◀</button>
       <img :src="images[Object.keys(images)[curr_left]].default" alt="Shadowed Home View" class="side-image">
@@ -34,6 +39,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faUserCircle);
 import {useRouter} from "vue-router";
 import Modal from "@/components/Modal.vue";
+import {authManager} from "@/services/AuthManager";
 
 const router = useRouter()
 
@@ -71,6 +77,10 @@ const prevImage = () => {
   updateImages();
 };
 
+const userExist = () => {
+  return authManager.isLoggedIn;
+}
+
 const login = () => {
   modalType.value = 'login';
   showModal.value = true;
@@ -80,6 +90,14 @@ const register = () => {
   modalType.value = 'register';
   showModal.value = true;
 };
+
+const jumpToMainPage = () => {
+  window.location.replace('#/Main');
+}
+
+const jumpToDashboardPage = () => {
+  window.location.replace('#/Dashboard');
+}
 
 const closeModal = () => {
   showModal.value = false;
@@ -113,6 +131,16 @@ h1 {
   text-align: center;
   margin-top: 5vh;
   font-size: 2em;
+}
+
+h2 {
+  text-align: center;
+  margin-top: 1vh;
+  font-size: 1.3em;
+}
+h2:hover {
+  /*background-color: lightgray;*/
+  cursor: pointer;
 }
 
 /* icon */
