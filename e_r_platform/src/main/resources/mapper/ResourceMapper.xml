@@ -16,19 +16,55 @@
 <!--        path-->
 <!--    </sql>-->
 
-    <insert id="insertOne">
-        insert into resource(course_id, name, path) value (#{course_id},#{name},#{path})
-    </insert>
-    <delete id="deleteByResourceId">
-        delete from resource where resource_id = #{resource_id}
+    <select id="selectChildren" resultType="Resource">
+        SELECT * FROM resource
+        WHERE parent_node_id = #{parentId}
+        ORDER BY display_order
+    </select>
+
+    <update id="shiftOrdersForInsert">
+        UPDATE resource SET display_order = display_order + 1
+        WHERE course_id = #{courseId}
+          AND parent_node_id = #{parentId}
+          AND display_order >= #{order}
+    </update>
+
+    <delete id="deleteSubtree">
+        WITH RECURSIVE cte AS (
+            SELECT node_id FROM resource WHERE node_id = #{nodeId}
+            UNION ALL
+            SELECT r.node_id FROM resource r INNER JOIN cte ON r.parent_node_id = cte.node_id
+        )
+        DELETE FROM resource WHERE node_id IN (SELECT node_id FROM cte)
     </delete>
 
-    <select id="searchAllByResourceId" resultType="com.e_r_platform.model.Resource">
-        select * from resource where resource_id = #{resource_id}
+    <update id="smartUpdateNodePosition">
+        UPDATE resource SET
+                            parent_node_id = #{entity.parent_node_id},
+                            display_order = #{entity.display_order},
+                            file_uri = CASE WHEN type = 'CHAPTER' THEN NULL ELSE file_uri END
+        WHERE node_id = #{entity.nodeId}
+    </update>
+
+    <select id="selectEntireCourseTree" resultType="Resource">
+        WITH RECURSIVE course_tree AS (
+            SELECT *, 0 AS depth
+            FROM resource
+            WHERE course_id = #{courseId} AND parent_node_id IS NULL
+            UNION ALL
+            SELECT r.*, ct.depth + 1
+            FROM resource r
+                     INNER JOIN course_tree ct ON r.parent_node_id = ct.node_id
+        )
+        SELECT * FROM course_tree ORDER BY depth, display_order
     </select>
 
-    <select id="getAllByCourseId" resultType="com.e_r_platform.model.Resource">
-        select * from resource where course_id = #{course_id}
-    </select>
+    <update id="swapDisplayOrder">
+        UPDATE resource AS r1
+            JOIN resource AS r2 ON (r1.node_id = #{id1} AND r2.node_id = #{id2})
+            SET
+                r1.display_order = r2.display_order,
+                r2.display_order = r1.display_order
+    </update>
 
 </mapper>

@@ -39,7 +39,7 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceMapper, Resource>
         return resource;
     }
 
-    public Resource uploadFile(int course_id, MultipartFile file) throws IOException {
+    public Resource uploadFile(int course_id, int node_id, MultipartFile file) throws IOException {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("File is empty");
         }

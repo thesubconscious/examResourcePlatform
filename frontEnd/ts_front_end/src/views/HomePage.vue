@@ -1,18 +1,11 @@
 <template>
   <div class="home">
-    <div class="header">
-      <FontAwesomeIcon :icon="['fas', 'user-circle']" @click="toggleMenu" class="icon"/>
-      <div v-if="menuVisible" class="menu">
-        <p v-if="userExist()" @click="jumpToDashboardPage()">个人页</p>
-        <div v-else class="auth-buttons">
-          <p @click="login">登录</p>
-          <p @click="register">注册</p>
-        </div>
-      </div>
-    </div>
-    <h1>欢迎来到考试学习资源平台</h1>
-    <h2 @click="jumpToMainPage()">点此访问主页</h2>
+    <Header/>
+
+    <h1>欢迎来到学习资源平台</h1>
+<!--    <h2 @click="jumpToMainPage()">点此访问主页</h2>-->
 <!--    <button @click="jumpToMainPage()" >访问主页</button>-->
+    <router-link to="Main" class="router">访问主页</router-link>
     <div class="image-container" @click="imageClicked">
       <button @click="prevImage" class="arrow left-arrow">◀</button>
       <img :src="images[Object.keys(images)[curr_left]].default" alt="Shadowed Home View" class="side-image">
@@ -21,35 +14,24 @@
       <button @click="nextImage" class="arrow right-arrow">▶</button>
     </div>
 
-    <div v-if="showModal">
-      <Modal :showModal="showModal" @closeModal="closeModal" :modalType="modalType" />
-    </div>
-
-    <div class="footer">
-      github@thesubconscious
-    </div>
+    <Footer/>
   </div>
 </template>
 
 <script setup lang="ts">
 import {computed, ref} from 'vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faUserCircle);
 import {useRouter} from "vue-router";
 import Modal from "@/components/Modal.vue";
-import {authManager} from "@/services/AuthManager";
+import Header from "@/components/Header.vue";
+import Footer from "@/components/Footer.vue";
 
 const router = useRouter()
 
-const menuVisible = ref(false);
 const showModal = ref(false);
 const modalType = ref('');
-
-const toggleMenu = () => {
-  menuVisible.value = !menuVisible.value;
-};
 
 const images = import.meta.glob('@/assets/HomeView*.jpg', { eager: true }) as Record<string, { default: string }>;
 const imageCount = Object.keys(images).length;
@@ -77,30 +59,9 @@ const prevImage = () => {
   updateImages();
 };
 
-const userExist = () => {
-  return authManager.isLoggedIn;
-}
-
-const login = () => {
-  modalType.value = 'login';
-  showModal.value = true;
-};
-
-const register = () => {
-  modalType.value = 'register';
-  showModal.value = true;
-};
-
-const jumpToMainPage = () => {
-  window.location.replace('#/Main');
-}
-
-const jumpToDashboardPage = () => {
-  window.location.replace('#/Dashboard');
-}
-
-const closeModal = () => {
-  showModal.value = false;
+const handleModalOpen = (type: 'login' | 'register') => {
+  modalType.value = type
+  showModal.value = true
 }
 
 const imageClicked = () => {
@@ -109,58 +70,21 @@ const imageClicked = () => {
 </script>
 
 <style scoped>
-.header, .footer {
-  position: fixed;
-  left: 0;
-  height: 3%;
-  width: 100%;
-  background-color: grey;
-  color: white;
-  text-align: center;
-  padding: 5px;
-  font-size: 14px;
-}
-.header {
-  top: 0;
-}
-.footer {
-  bottom: 0;
-}
-
 h1 {
   text-align: center;
   margin-top: 5vh;
   font-size: 2em;
 }
 
-h2 {
+.router {
+  display: inline-block;
   text-align: center;
-  margin-top: 1vh;
-  font-size: 1.3em;
+  font-size: 1.1em;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
 }
-h2:hover {
-  /*background-color: lightgray;*/
-  cursor: pointer;
-}
-
-/* icon */
-.icon {
-  height: 80%;
-  position: absolute;
-  right: 1%;
-  top:10%;
-  cursor: pointer;
-}
-.menu {
-  background-color: white;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-  padding: 8px;
-  position: absolute;
-  right: 10px;
-  top: 40px;
-  color: black;
-}
-.menu p:hover {
+.router:hover {
   background-color: lightgray;
   cursor: pointer;
 }
@@ -200,7 +124,7 @@ h2:hover {
   display: inline-block;
 }
 .side-image {
-  z-index: 1; /* 确保侧边图片在箭头下方 */
+  z-index: -1; /* 确保侧边图片在箭头下方 */
   max-width: 30%;
   height: auto;
   display: inline-block;
@@ -218,7 +142,7 @@ h2:hover {
     filter: blur(2px);*/
   }
   .side-image {
-    z-index: 1; /* 确保侧边图片在箭头下方 */
+    z-index: -1; /* 确保侧边图片在箭头下方 */
     max-width: 10%;
     /*height: auto;*/
     min-height: 50vh;

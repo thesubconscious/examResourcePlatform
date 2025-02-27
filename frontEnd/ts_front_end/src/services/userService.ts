@@ -18,16 +18,16 @@ export class UserService {
     //     })
     // }
 
-    getCookie(name:string): string | null {
-        // 当前后端使用了httponly，因此暂时用不上
-        const value = document.cookie
-            .split('; ')
-            .find(row => row.startsWith(`${name}=`))
-            ?.split('=')[1] ?? null
-
-        // console.log('[Cookie嗅探]', name, value ? '√存在' : '×缺失')
-        return value
-    }
+    // getCookie(name:string): string | null {
+    //     // 当前后端使用了httponly，因此暂时用不上
+    //     const value = document.cookie
+    //         .split('; ')
+    //         .find(row => row.startsWith(`${name}=`))
+    //         ?.split('=')[1] ?? null
+    //
+    //     // console.log('[Cookie嗅探]', name, value ? '√存在' : '×缺失')
+    //     return value
+    // }
 
     async login(email: string, password: string): Promise<any> {
         try{
@@ -66,6 +66,7 @@ export class UserService {
         try {
             const { data } = await this.apiClient.post('/users/logout')
             localStorage.removeItem('userId')
+            localStorage.removeItem('auth_expire')
             authManager.stopPolling()
             return '成功登出'
         } catch(err) {

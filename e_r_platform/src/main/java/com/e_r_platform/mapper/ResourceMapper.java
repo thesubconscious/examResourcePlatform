@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
 * @author Administrator
@@ -13,13 +14,18 @@ import java.util.ArrayList;
 * @Entity com.e_r_platform.model.Resource
 */
 public interface ResourceMapper extends BaseMapper<Resource> {
-    int insertOne(@Param("course_id") int course_id, @Param("name") String name, @Param("path") String path);
+    List<Resource> selectChildren(@Param("parentId") Integer parentId);
+    List<Resource> selectEntireCourseTree(Integer courseId);
 
-    int deleteByResourceId(@Param("resource_id") int resource_id);
+    void shiftOrdersForInsert(@Param("courseId") Integer courseId,
+                              @Param("parentId") Integer parentId,
+                              @Param("order") Integer order);
 
-    Resource searchAllByResourceId(@Param("resource_id") int resource_id);
+    int deleteSubtree(Integer nodeId);
 
-    ArrayList<Resource> getAllByCourseId(@Param("course_id") int course_id);
+    int smartUpdateNodePosition(@Param("entity") Resource entity);
+
+    int swapDisplayOrder(@Param("id1") Integer id1, @Param("id2") Integer id2);
 }
 
 

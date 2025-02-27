@@ -22,6 +22,7 @@
         update course
         <set>
             <if test="name != null">name = #{name}</if>
+            <if test="introduction != null">introduction = #{name}</if>
             <if test="teacher_id != null">teacher_id = #{teacher_id}</if>
         </set>
         where course_id = #{course_id}

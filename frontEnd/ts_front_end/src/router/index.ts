@@ -17,9 +17,15 @@ const router = createRouter({
       component: MainPage
     },
     {
-      path: '/dashboard',
-      name: 'dashboard',
+      path: '/Dashboard',
+      name: 'Dashboard',
       component: DashboardPage
+    },
+    {
+      path: '/courses/:id',
+      name: 'CourseDetailPage',
+      component: () => import('@/views/CourseDetailPage.vue'),
+      props: true // 自动把id注入props
     },
   ]
 })

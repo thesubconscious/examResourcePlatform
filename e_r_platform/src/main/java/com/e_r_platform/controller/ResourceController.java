@@ -1,6 +1,7 @@
 package com.e_r_platform.controller;
 
 import com.e_r_platform.model.Resource;
+import com.e_r_platform.model.User;
 import com.e_r_platform.service.impl.ResourceServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -30,13 +31,13 @@ public class ResourceController {
     private ResourceServiceImpl resourceService;
 
     @PostMapping
-    public ResponseEntity<?> handleFileUpload(@PathVariable int id, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<?> handleFileUpload(@RequestBody Resource resource, @RequestParam("file") MultipartFile file) {
         try {
-            Resource resource = resourceService.uploadFile(id, file);
+            Resource res = resourceService.uploadFile(resource.getCourse_id(), resource.getNode_id(), file);
 
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put("message", "Resource upload successfully.");
-            responseBody.put("resource_id", resource.getResource_id());
+            responseBody.put("resource_id", resource.getNode_id());
             return ResponseEntity.ok(responseBody);
 
         } catch (IllegalArgumentException e) {

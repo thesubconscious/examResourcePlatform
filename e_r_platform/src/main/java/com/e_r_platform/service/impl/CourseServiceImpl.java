@@ -47,7 +47,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course>
     }
 
     public int update(Course course){
-        int result = courseMapper.update(course.getCourse_id(),course.getName(),course.getTeacher_id());
+        int result = courseMapper.update(course.getCourse_id(),course.getName(),course.getIntroduction(),course.getTeacher_id());
         return result;
     }
 

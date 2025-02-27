@@ -67,6 +67,7 @@ const handleLRFailure = (errorMessage: string) => {
 
 <style scoped>
 .modal-overlay {
+  z-index: 100;
   position: fixed;
   top: 0;
   left: 0;

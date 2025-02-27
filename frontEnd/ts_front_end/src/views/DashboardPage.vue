@@ -2,12 +2,12 @@
   <div class="dashboard-background">
   <div class="dashboard-container">
     <div >
-      <button><- 返回主页</button>
+      <button @click="jumpToMain()">{{$t('dashboard.back')}}</button>
     </div>
 
     <!-- 头部信息区 -->
     <div class="dashboard-header">
-        <h2>个人主页</h2>
+        <h2>{{$t('dashboard.title')}}</h2>
         <FontAwesomeIcon :icon="['fas', 'user-circle']" class="user-avatar"/>
     </div>
 
@@ -30,11 +30,11 @@
     <!-- 标签栏1：个人信息 -->
         <div v-show="activeTab === 'profile'" class="profile-section">
           <div class="user-details">
-            <h3>个人信息</h3>
-            <p><span class="detail-label">姓名:</span> {{ userDetails.name }}</p>
-            <p><span class="detail-label">邮箱:</span> {{ userDetails.email }}</p>
+            <h3>{{$t('dashboard.infos.title')}}</h3>
+            <p><span class="detail-label">{{$t('dashboard.infos.name')}}:</span> {{ userDetails.name }}</p>
+            <p><span class="detail-label">{{$t('dashboard.infos.email')}}:</span> {{ userDetails.email }}</p>
             <button @click="openModal('editProfile')" class="edit-button">
-              修改资料
+              {{$t('dashboard.infos.edit')}}
             </button>
           </div>
         </div>
@@ -44,19 +44,19 @@
         <div v-show="activeTab === 'actions'" class="course-section">
           <div v-if="isTeacher" class="teacher-actions">
             <button class="create-course-btn" @click="openModal('createCourse')">
-              + 新建课程
+              {{$t('dashboard.courseAction.create')}}
             </button>
           </div>
-          <button class="create-course-btn" @click="openModal('createCourse')">
-            课程列表
+          <button class="create-course-btn" @click="openModal('listCourse')">
+            {{$t('dashboard.courseAction.list')}}
           </button>
         </div>
 
     <!-- 标签栏3：系统功能区 -->
         <div v-show="activeTab === 'settings'" class="system-settings">
           <!-- TODO：切换语言 -->
-          <button class="logout-button">切换语言</button>
-          <button @click="logout" class="logout-button">Logout</button>
+          <button @click="changeLanguage" class="action-button">{{$t('dashboard.switchLanguageButton')}}</button>
+          <button @click="logout" class="action-button">{{$t('dashboard.logout')}}</button>
         </div>
       </div>
     </transition>
@@ -82,11 +82,13 @@ import {useRouter} from "vue-router";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import {authManager} from "@/services/AuthManager";
+import {useI18n} from "vue-i18n";
+import i18n from "@/services/i18n";
 library.add(faUserCircle);
 
+const router = useRouter()
 const userService = new UserService();
-const router = useRouter();
+const { t } = useI18n()
 
 const userDetails = ref({
   userId: '',
@@ -99,12 +101,11 @@ const modalType = ref('')
 const message = ref()
 const showModal = ref(false)
 const activeTab = ref('profile')
-const baseTabs = ref([
-  { id: 'profile', label: '个人中心', visible: true },
-  { id: 'actions', label: '功能管理', visible: true },
-  { id: 'settings', label: '系统设置', visible: true }
+const baseTabs = computed(() => [
+  { id: 'profile', label: t('dashboard.tabs.profile') },
+  { id: 'actions', label: t('dashboard.tabs.actions') },
+  { id: 'settings', label: t('dashboard.tabs.settings') }
 ])
-
 onMounted(async () => {
   const id = localStorage.getItem("userId");
   if (id) {
@@ -125,8 +126,7 @@ const closeModal = () => {
   showModal.value = false;
 
   if(modalType.value == 'displayMessage') {
-    // router.push("/");
-    window.location.replace('#/');
+    router.push({name:'Home'});
   }
 }
 
@@ -138,6 +138,17 @@ const logout = async() => {
   } catch (err) {
     message.value = '登出失败：网络异常'
   }
+}
+
+const changeLanguage = () => {
+  const newLang = i18n.global.locale.value === 'zh-CN' ? 'en' : 'zh-CN' //TODO: 之后用Modal选择语言
+  localStorage.setItem('userLang', newLang) // ← 关键存储
+  i18n.global.locale.value = newLang
+  // 记得把语言设置存到localStorage或pinia/vuex里！
+}
+
+const jumpToMain = () => {
+  router.push({name: 'Main'})
 }
 
 // 根据身份过滤选项卡
