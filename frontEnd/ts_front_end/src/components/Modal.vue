@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import {ref} from "vue";
 import LoginRegisterForm from "@/components/LoginRegisterForm.vue";
-
+import CreateCourseForm from "@/components/CreateCourseForm.vue";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
+
 library.add(faTimes);
 
 
@@ -28,8 +29,10 @@ const closeModal = () => {
   messageText.value = '';
 }
 
-const handleLRFailure = (errorMessage: string) => {
-  messageText.value = errorMessage;
+const handleMessage = (message: string) => {
+  messageText.value = '';
+
+  messageText.value = message;
   showMessage.value = true;
 }
 </script>
@@ -45,12 +48,14 @@ const handleLRFailure = (errorMessage: string) => {
         <div v-if="modalType === 'login' || modalType === 'register'">
           <login-register-form
               :isLogin = "modalType === 'login'"
-              @LRFail = "handleLRFailure"
+              @message = "handleMessage"
           />
         </div>
 
         <div v-if="modalType === 'createCourse'">
-          //TODO: Add Course Form
+          <create-course-form
+            @message = "handleMessage"
+          />
         </div>
 
         <div v-if="modalType === 'displayMessage'" class="displayMessage">

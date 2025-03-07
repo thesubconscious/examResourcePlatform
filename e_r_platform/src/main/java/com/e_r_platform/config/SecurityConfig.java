@@ -33,6 +33,8 @@ public class SecurityConfig {
                         .requestMatchers("/users/login").permitAll()
                         .requestMatchers("/users/register").permitAll()
                         .requestMatchers(HttpMethod.GET,"/courses").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/courses/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/courses/{id}/resources").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users").hasAuthority("admin")
 //                        .requestMatchers(HttpMethod.POST, "/courses").hasAuthority("teacher")
 //                        .requestMatchers(HttpMethod.PATCH, "/courses/{id}").hasAuthority("teacher")

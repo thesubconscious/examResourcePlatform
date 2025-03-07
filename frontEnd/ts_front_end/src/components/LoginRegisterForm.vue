@@ -3,7 +3,9 @@ import { ref } from 'vue';
 import InputField from "@/components/InputField.vue";
 import SubmitButton from "@/components/SubmitButton.vue";
 import { UserService } from '@/services/userService';
+import {useRouter} from "vue-router";
 
+const router = useRouter()
 const userService = new UserService();
 
 const props = defineProps({
@@ -21,7 +23,7 @@ const formData = ref({
 });
 
 const emit = defineEmits<{
-  (e: 'LRFail', errorMessage: string): void;
+  (e: 'message', errorMessage: string): void;
 }>();
 
 // const handleSubmit = async () => {
@@ -35,10 +37,11 @@ const handleSubmit = async () => {
     try {
       const response = await userService.login(formData.value.email, formData.value.password);
       console.log('Login successful:', response);
-      window.location.replace('#/dashboard');
+      router.push({name:'Dashboard'})
+      // window.location.replace('#/dashboard');
     } catch (err) {
       console.error('Login failed:', err);
-      emit('LRFail', err.response.data);
+      emit('message', err);
     }
   } else {
     // 注册逻辑

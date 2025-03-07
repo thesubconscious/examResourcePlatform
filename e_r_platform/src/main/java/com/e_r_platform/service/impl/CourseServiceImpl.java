@@ -42,12 +42,16 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course>
         Course existedCourse = courseMapper.searchByNameAndTeacherId(course.getName(),course.getTeacher_id());
         if(existedCourse!=null) return -1;
 
-        int course_id = courseMapper.create(course.getName(),course.getTeacher_id());
+        int course_id = courseMapper.create(course);
         return course_id;
     }
 
     public int update(Course course){
-        int result = courseMapper.update(course.getCourse_id(),course.getName(),course.getIntroduction(),course.getTeacher_id());
+        int result = courseMapper.update(course.getCourse_id(),
+                course.getName(),
+                course.getIntroduction(),
+                course.getImg_path(),
+                course.getTeacher_id());
         return result;
     }
 

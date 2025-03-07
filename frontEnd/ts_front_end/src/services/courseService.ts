@@ -28,10 +28,10 @@ class CourseService {
         }
     }
 
-    async createCourses(email:string, name:string, password:string, identity:string){
+    async createCourse(name:string, introduction:string, teacher_id:string){
         try {
             const { data } = await this.apiClient.post('/courses', {
-                email, name, password, identity
+                name, introduction, teacher_id
             })
             return data
         } catch(err) {

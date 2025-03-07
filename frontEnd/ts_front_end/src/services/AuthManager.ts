@@ -8,9 +8,10 @@ class AuthManager {
         try {
             const userService = new UserService();
             const { expiresIn, isAuthenticated }  = await userService.authCheck();
-            const serverTime = Date.now() + (expiresIn * 1000); // 假设expiresIn单位是秒
-            const clientTime = Date.now() + 300_000;
-            const actualExpire = Math.min(serverTime, clientTime);
+            const serverTime = Date.now() + expiresIn; // 假设expiresIn单位是秒
+            // const clientTime = Date.now() + 300_000;
+            // const actualExpire = Math.min(serverTime, clientTime);
+            const actualExpire = serverTime;
             localStorage.setItem('auth_expire', actualExpire.toString());
             return isAuthenticated;
         } catch (error) {
@@ -44,7 +45,13 @@ class AuthManager {
 
     // 实时登录态判断
     public get isLoggedIn() {
-        return Number(localStorage.getItem('auth_expire')) > Date.now();
+        if(localStorage.getItem('auth_expire')){
+            let compare = Number(localStorage.getItem('auth_expire')) > Date.now();
+            console.log("过期时间：", new Date(Number(localStorage.getItem('auth_expire'))).toISOString());
+            console.log("当前时间：", new Date(Date.now()).toISOString())
+            return compare;
+        }
+        return false;
     }
 }
 

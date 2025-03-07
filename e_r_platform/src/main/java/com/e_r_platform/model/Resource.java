@@ -31,15 +31,13 @@ public class Resource implements Serializable {
 
     private Integer display_order;
 
-    // 智能方法（推眼镜）
     public boolean isFolder() {
         return type == NodeType.CHAPTER;
     }
 
     public enum NodeType {
         CHAPTER,
-        VIDEO,
-        DOCUMENT;
+        LEAF
     }
 
     @TableField(exist = false)

@@ -14,18 +14,14 @@ import java.util.List;
 * @Entity com.e_r_platform.model.Resource
 */
 public interface ResourceMapper extends BaseMapper<Resource> {
+    int insertResource(Resource resource);
+    int updateResource(Resource resource);
+    int decrementOrderAfterDelete(@Param("parentId") Integer parentId,
+                                  @Param("deletedOrder") int deletedOrder);
+    int deleteById(@Param("nodeId") int nodeId);
+    int selectMaxOrderUnderParent(@Param("parentId") int parentId);
+    Resource selectById(@Param("nodeId") int nodeId);
     List<Resource> selectChildren(@Param("parentId") Integer parentId);
-    List<Resource> selectEntireCourseTree(Integer courseId);
-
-    void shiftOrdersForInsert(@Param("courseId") Integer courseId,
-                              @Param("parentId") Integer parentId,
-                              @Param("order") Integer order);
-
-    int deleteSubtree(Integer nodeId);
-
-    int smartUpdateNodePosition(@Param("entity") Resource entity);
-
-    int swapDisplayOrder(@Param("id1") Integer id1, @Param("id2") Integer id2);
 }
 
 

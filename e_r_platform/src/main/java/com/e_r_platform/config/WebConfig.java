@@ -16,6 +16,8 @@ public class WebConfig implements WebMvcConfigurer {
         return new StandardServletMultipartResolver();
     }
 
+    public String uploadBasePath = "C:/uploads";
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")            // 允许对所有API的跨域请求

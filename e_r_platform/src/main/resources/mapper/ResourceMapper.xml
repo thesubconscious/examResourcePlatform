@@ -5,10 +5,13 @@
 <mapper namespace="com.e_r_platform.mapper.ResourceMapper">
 
     <resultMap id="BaseResultMap" type="com.e_r_platform.model.Resource">
-            <id property="resource_id" column="resource_id" jdbcType="INTEGER"/>
-            <result property="course_id" column="course_id" jdbcType="INTEGER"/>
-            <result property="name" column="name" jdbcType="VARCHAR"/>
-            <result property="path" column="path" jdbcType="VARCHAR"/>
+        <id column="node_id" property="nodeId"/>
+        <result column="course_id" property="courseId"/>
+        <result column="parent_node_id" property="parentNodeId"/>
+        <result column="type" property="type"/>
+        <result column="title" property="title"/>
+        <result column="file_uri" property="fileUri"/>
+        <result column="display_order" property="displayOrder"/>
     </resultMap>
 
 <!--    <sql id="Base_Column_List">-->
@@ -16,55 +19,49 @@
 <!--        path-->
 <!--    </sql>-->
 
-    <select id="selectChildren" resultType="Resource">
-        SELECT * FROM resource
-        WHERE parent_node_id = #{parentId}
-        ORDER BY display_order
-    </select>
+    <insert id="insertResource" useGeneratedKeys="true" keyProperty="nodeId">
+        INSERT INTO resource
+            (course_id, parent_node_id, type, title, file_uri, display_order)
+        VALUES
+            (#{courseId}, #{parentNodeId}, #{type}, #{title}, #{fileUri}, #{displayOrder})
+    </insert>
 
-    <update id="shiftOrdersForInsert">
-        UPDATE resource SET display_order = display_order + 1
-        WHERE course_id = #{courseId}
-          AND parent_node_id = #{parentId}
-          AND display_order >= #{order}
+    <update id="updateResource" parameterType="com.e_r_platform.model.Resource">
+        UPDATE resource
+        <set>
+            <if test="courseId != null">course_id = #{course_id},</if>
+            <if test="parentNodeId != null">parent_node_id = #{parent_node_id},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="title != null">title = #{title},</if>
+            <if test="fileUri != null">file_uri = #{file_uri},</if>
+            <if test="displayOrder != null">display_order = #{display_order}</if>
+        </set>
+        WHERE node_id = #{node_id}
     </update>
 
-    <delete id="deleteSubtree">
-        WITH RECURSIVE cte AS (
-            SELECT node_id FROM resource WHERE node_id = #{nodeId}
-            UNION ALL
-            SELECT r.node_id FROM resource r INNER JOIN cte ON r.parent_node_id = cte.node_id
-        )
-        DELETE FROM resource WHERE node_id IN (SELECT node_id FROM cte)
+    <update id="decrementOrderAfterDelete">
+        UPDATE resource SET
+                            display_order = display_order - 1
+        WHERE parent_node_id = #{parentId} AND display_order > #{deletedOrder}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM resource WHERE node_id = #{nodeId}
     </delete>
 
-    <update id="smartUpdateNodePosition">
-        UPDATE resource SET
-                            parent_node_id = #{entity.parent_node_id},
-                            display_order = #{entity.display_order},
-                            file_uri = CASE WHEN type = 'CHAPTER' THEN NULL ELSE file_uri END
-        WHERE node_id = #{entity.nodeId}
-    </update>
-
-    <select id="selectEntireCourseTree" resultType="Resource">
-        WITH RECURSIVE course_tree AS (
-            SELECT *, 0 AS depth
-            FROM resource
-            WHERE course_id = #{courseId} AND parent_node_id IS NULL
-            UNION ALL
-            SELECT r.*, ct.depth + 1
-            FROM resource r
-                     INNER JOIN course_tree ct ON r.parent_node_id = ct.node_id
-        )
-        SELECT * FROM course_tree ORDER BY depth, display_order
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM resource WHERE node_id = #{nodeId}
     </select>
 
-    <update id="swapDisplayOrder">
-        UPDATE resource AS r1
-            JOIN resource AS r2 ON (r1.node_id = #{id1} AND r2.node_id = #{id2})
-            SET
-                r1.display_order = r2.display_order,
-                r2.display_order = r1.display_order
-    </update>
+    <select id="selectChildren" resultMap="BaseResultMap">
+        SELECT * FROM resource
+        WHERE parent_node_id = #{parentId}
+        ORDER BY display_order ASC
+    </select>
+
+    <select id="selectMaxOrderUnderParent" resultType="Integer">
+        SELECT MAX(display_order) FROM resource
+        WHERE parent_node_id = #{parentId}
+    </select>
 
 </mapper>

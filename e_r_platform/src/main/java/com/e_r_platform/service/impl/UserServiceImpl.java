@@ -76,7 +76,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     public int register(User user){
         Optional<User> existedUser =  userMapper.selectUserByEmail(user.getEmail());
-        if(existedUser!=null){
+        if(existedUser.isPresent()){
             return -1;
         }
         String email = user.getEmail();

@@ -31,9 +31,19 @@ public class Course implements Serializable {
     private String introduction;
 
     /**
+     *
+     */
+    private String img_path;
+
+    /**
      * 
      */
     private Integer teacher_id;
+
+    /**
+     *嵌套User
+     */
+    private User teacher;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

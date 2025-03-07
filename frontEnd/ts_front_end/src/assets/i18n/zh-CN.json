@@ -25,5 +25,13 @@
     "nav": {
       "title": "过滤器"
     }
+  },
+  "createCourseForm": {
+    "title": "创建课程",
+    "form": {
+      "name": "名字：",
+      "introduction": "简介：",
+      "submit": "提交"
+    }
   }
 }

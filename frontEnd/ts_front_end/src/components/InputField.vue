@@ -4,7 +4,8 @@ import {ref, computed, onMounted} from 'vue';
 const props = defineProps({
   label: String,
   modelValue: [String, Number],
-  type: { type: String, default: 'text' }
+  type: { type: String, default: 'text' },
+  isLarge: { type: Boolean, default: false }
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -27,22 +28,42 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="input-field">
-    <label :for="id">{{ label }}</label>
-    <input :id="id" :type="type" v-model="computedValue" />
-  </div>
+    <div class="input-field" :class="{ 'input-field--large': isLarge }">
+      <label>{{ label }}</label>
+      <!-- 根据 isLarge 动态选择 input 或 textarea -->
+      <component
+          :is="isLarge ? 'textarea' : 'input'"
+          :type="!isLarge && type"
+          :value="modelValue"
+          @input="$emit('update:modelValue', $event.target.value)"
+          class="form-control"
+      />
+    </div>
 </template>
 
 <style scoped>
-.input-field input {
-  /*padding: 10px;
-  font-size: 16px;
-  border-radius: 5px;
-  border: 3px solid #000000;*/
+.input-field {
+  display: flex; /* 使用 Flexbox 布局 */
+  align-items: center; /* 垂直居中对齐 */
+}
+
+.input-field label {
+  margin-right: .5rem; /* 添加右边距，使其与输入框分开 */
+}
+
+.input-field input,
+.input-field textarea {
+  padding: 0.5rem;
   transition: border-color 0.4s ease;
 }
 
-.input-field input:focus {
+/* 当 isLarge 为 true 时，应用更大的样式 */
+.input-field--large textarea {
+  min-height: 8vh;
+}
+
+.input-field input:focus,
+.input-field textarea:focus {
   border-color: #007BFF;
   outline: none;
 }

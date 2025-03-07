@@ -20,9 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/courses/{id}/resources")
@@ -33,7 +31,7 @@ public class ResourceController {
     @PostMapping
     public ResponseEntity<?> handleFileUpload(@RequestBody Resource resource, @RequestParam("file") MultipartFile file) {
         try {
-            Resource res = resourceService.uploadFile(resource.getCourse_id(), resource.getNode_id(), file);
+            Resource res = resourceService.createResource(resource, file);
 
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put("message", "Resource upload successfully.");
@@ -80,7 +78,7 @@ public class ResourceController {
 
     @GetMapping
     public ResponseEntity<?> handleGetAllResourcesByCouseID(@PathVariable int id){
-        ArrayList<Resource> list = resourceService.getAllResourcesByCourseID(id);
+        List<Resource> list = resourceService.getChildren(id);
         if(list.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("There is no resource");
         }
@@ -92,12 +90,9 @@ public class ResourceController {
     @DeleteMapping("/{resource_id}")
     public ResponseEntity<?> handleFileDelete(@PathVariable int resource_id) {
         try {
-            if(resourceService.deleteFile(resource_id)){
-                return ResponseEntity.ok("Resource deleted successfully");
-            }else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete resource");
-            }
-        } catch (FileNotFoundException e) {
+            resourceService.deleteResource(resource_id);
+            return ResponseEntity.ok("Resource deleted successfully");
+        } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

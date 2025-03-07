@@ -7,23 +7,39 @@
         <h2>{{$t('main.nav.title')}}</h2>
       </div>
 
-      <div class="content">
+      <div class="header">
         <div class="title">
-        <h1>{{$t('main.content.title')}}</h1>
+          <h1>{{$t('main.content.title')}}</h1>
 
-        <p>{{$t('main.content.more')}}</p>
+          <p>{{$t('main.content.more')}}</p>
         </div>
 
+        <div class="hot">
+          <div
+              v-for="course in hotCourseList"
+              :key="course.course_id"
+              class="course-item"
+              @click="handleCourseClick(course.course_id)"
+          >
+            <img :src="course.img_path">
+            {{ course.name }} - {{ course.teacher.name }}
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
         <div class="coursesList">
           <div
               v-for="course in courseList"
               :key="course.course_id"
               class="course-item"
+              @click="handleCourseClick(course.course_id)"
           >
-            {{ course.name }} - 教师ID: {{ course.teacher_id }}
+            {{ course.name }} - {{ course.teacher.name }}
           </div>
 
         </div>
+
       </div>
 
     </div>
@@ -37,15 +53,53 @@ import Footer from "@/components/Footer.vue";
 import {courseService} from "@/services/courseService";
 import {useI18n} from "vue-i18n";
 import {onMounted, ref} from "vue";
+import {useRouter} from "vue-router";
 
 const { t } = useI18n();
+const router = useRouter();
 
-const courseList = ref<Course[]>([]) // 初始化为空数组更合理
+const courseList = ref<Course[]>([])
+const hotCourseList = ref<Course[]>([
+  {
+    course_id: "101",
+    name: "Introduction to TypeScript",
+    introduction: "Learn the basics of TypeScript, a typed superset of JavaScript.",
+    img_path: "/assets/courseImages/typescript.jpg",
+    teacher: {
+      name:'T800',
+      teacher_id:'800'
+    }
+  },
+  {
+    course_id: "102",
+    name: "Advanced Vue.js Techniques",
+    introduction: "Deep dive into advanced features and patterns in Vue.js.",
+    img_path: "/assets/courseImages/vuejs.jpg",
+    teacher: {
+      name:'T800',
+      teacher_id:'800'
+    }
+  },
+  {
+    course_id: "103",
+    name: "Fullstack Development with Node.js",
+    introduction: "Build scalable applications using Node.js and Express.",
+    img_path: "/assets/courseImages/nodejs.jpg",
+    teacher: {
+      name:'T800',
+      teacher_id:'800'
+    }
+  }
+]) // 暂时写死
 
 onMounted(async () => {
   courseList.value = await courseService.getAllCourses();
   console.log(courseList.value)
 });
+
+const handleCourseClick = (courseId:string) => {
+  router.push({ name: 'CourseDetailPage', params: { id: courseId } });
+}
 </script>
 
 <style scoped>
@@ -66,7 +120,11 @@ onMounted(async () => {
   padding: 2vh;
 }
 
-.content{
+.header{
   flex:1;
+}
+
+.content{
+  flex: 1;
 }
 </style>

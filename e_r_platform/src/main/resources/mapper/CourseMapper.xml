@@ -10,19 +10,34 @@
             <result property="teacher_id" column="teacher_id" jdbcType="INTEGER"/>
     </resultMap>
 
+    <resultMap id="CourseWithTeacherResultMap" type="com.e_r_platform.model.Course">
+        <id property="course_id" column="course_id"/>
+        <result property="name" column="course_name"/>
+        <result property="introduction" column="introduction"/>
+        <result property="img_path" column="img_path"/>
+
+        <!-- 嵌套的 Teacher 对象 -->
+        <association property="teacher" javaType="com.e_r_platform.model.User">
+            <id property="user_id" column="teacher_id"/>
+            <result property="name" column="teacher_name"/>
+        </association>
+    </resultMap>
+
 <!--    <sql id="Base_Column_List">-->
 <!--        course_id,name,teacher_id-->
 <!--    </sql>-->
 
     <insert id="create">
-        insert into course (name,teacher_id) values (#{name}, #{teacher_id})
+        insert into course (name,introduction,img_path,teacher_id)
+                    values (#{name},#{introduction},#{img_path}, #{teacher_id})
     </insert>
 
     <update id="update">
         update course
         <set>
             <if test="name != null">name = #{name}</if>
-            <if test="introduction != null">introduction = #{name}</if>
+            <if test="introduction != null">introduction = #{introduction}</if>
+            <if test="img_path != null">img_path = #{img_path}</if>
             <if test="teacher_id != null">teacher_id = #{teacher_id}</if>
         </set>
         where course_id = #{course_id}
@@ -32,8 +47,20 @@
         delete from course where course_id = #{course_id}
     </delete>
 
-    <select id="getAll" resultType="com.e_r_platform.model.Course">
-        select * from course
+<!--    <select id="getAll" resultType="com.e_r_platform.model.Course">-->
+<!--        select * from course-->
+<!--    </select>-->
+
+    <select id="getAll" resultMap="CourseWithTeacherResultMap">
+        SELECT
+            c.course_id,
+            c.name AS course_name,
+            c.introduction,
+            c.img_path,
+            u.user_id AS teacher_id,
+            u.name AS teacher_name
+        FROM course c
+                 JOIN user u ON c.teacher_id = u.user_id
     </select>
 
     <select id="getOne" resultType="com.e_r_platform.model.Course">
