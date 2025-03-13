@@ -9,8 +9,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -82,14 +84,14 @@ public class CourseController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> handleUpdateCourse(@RequestBody Course course, @PathVariable int id){
-        course.setCourse_id(id);
-        int result = courseService.update(course);
+    public ResponseEntity<?> handleUpdateCourse(@RequestPart("course") Course course,
+                                                @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
+        int result = courseService.update(course, file);
 
         if(result!=0)
             return ResponseEntity.ok("Update success");
         else
-            return ResponseEntity.badRequest().body("Course does not exist");
+            return ResponseEntity.badRequest().body("Course id "+ course.getCourse_id() +"does not exist");
     }
 
     @DeleteMapping("/{id}")

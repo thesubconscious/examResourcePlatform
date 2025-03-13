@@ -24,7 +24,7 @@ import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faUserCircle);
 import {useRouter} from "vue-router";
-import Modal from "@/components/Modal.vue";
+import Modal from "@/components/modal/Modal.vue";
 import Header from "@/components/Header.vue";
 import Footer from "@/components/Footer.vue";
 
@@ -114,6 +114,7 @@ h1 {
 /* 图片 */
 .image-container {
   min-height: 60vh;
+  max-height: 100vh;
   text-align: center;
   margin: 3vh 0 3vh 0;
 }

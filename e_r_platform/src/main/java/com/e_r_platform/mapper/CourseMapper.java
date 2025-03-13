@@ -23,11 +23,12 @@ public interface CourseMapper extends BaseMapper<Course> {
 
     int deleteByCourse_id(@Param("course_id") int course_id);
 
-    int update(@Param("course_id") int course_id,
-               @Param("name") String name,
-               @Param("introduction") String introduction,
-               @Param("img_path") String img_path,
-               @Param("teacher_id") int teacher_id);
+//    int update(@Param("course_id") int course_id,
+//               @Param("name") String name,
+//               @Param("introduction") String introduction,
+//               @Param("img_path") String img_path,
+//               @Param("teacher_id") int teacher_id);
+    int update(Course course);
 }
 
 

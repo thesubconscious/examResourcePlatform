@@ -29,7 +29,7 @@ public class ResourceController {
     private ResourceServiceImpl resourceService;
 
     @PostMapping
-    public ResponseEntity<?> handleFileUpload(@RequestBody Resource resource, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<?> handleFileUpload(@RequestPart("resource") Resource resource, @RequestParam("file") MultipartFile file) {
         try {
             Resource res = resourceService.createResource(resource, file);
 

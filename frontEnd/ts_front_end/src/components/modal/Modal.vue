@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import {ref} from "vue";
-import LoginRegisterForm from "@/components/LoginRegisterForm.vue";
-import CreateCourseForm from "@/components/CreateCourseForm.vue";
+import LoginRegisterForm from "@/components/modal/LoginRegisterForm.vue";
+import CreateCourseForm from "@/components/modal/CreateCourseForm.vue";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import UploadResourceForm from "@/components/modal/uploadResourceForm.vue";
 
 library.add(faTimes);
 
@@ -54,6 +55,13 @@ const handleMessage = (message: string) => {
 
         <div v-if="modalType === 'createCourse'">
           <create-course-form
+            @message = "handleMessage"
+          />
+        </div>
+
+        <div v-if="modalType === 'uploadFileCourse' ">
+          <upload-resource-form
+            :uploadType = "modalType"
             @message = "handleMessage"
           />
         </div>

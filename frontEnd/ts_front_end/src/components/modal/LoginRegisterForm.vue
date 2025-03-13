@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import InputField from "@/components/InputField.vue";
-import SubmitButton from "@/components/SubmitButton.vue";
+import InputField from "@/components/basic/InputField.vue";
+import SubmitButton from "@/components/basic/SubmitButton.vue";
 import { UserService } from '@/services/userService';
 import {useRouter} from "vue-router";
 

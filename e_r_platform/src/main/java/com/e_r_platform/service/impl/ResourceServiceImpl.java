@@ -65,7 +65,7 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceMapper, Resource>
         // 递归查找章节节点
         Resource current = getParentChapterNode(resource.getParent_node_id());
         if (current != null) {
-            pathSegments.add("Chapter");
+            pathSegments.add("chapter");
             pathSegments.add(current.getNode_id().toString());
             buildNodePath(current.getNode_id(), pathSegments);
         }

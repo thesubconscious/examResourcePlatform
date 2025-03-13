@@ -6,7 +6,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faUserCircle);
 import {authManager} from "@/services/AuthManager";
 import { useRouter } from 'vue-router'
-import Modal from "@/components/Modal.vue";
+import Modal from "@/components/modal/Modal.vue";
 
 const menuVisible = ref(false);
 const showModal = ref(false);

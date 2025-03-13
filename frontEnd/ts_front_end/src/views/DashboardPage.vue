@@ -76,7 +76,7 @@
 
 <script setup lang="ts">
 import { UserService } from '@/services/userService';
-import Modal from '@/components/Modal.vue';
+import Modal from '@/components/modal/Modal.vue';
 import {computed, onMounted, ref} from "vue";
 import {useRouter} from "vue-router";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
