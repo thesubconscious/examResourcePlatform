@@ -59,6 +59,12 @@
         ORDER BY display_order ASC
     </select>
 
+    <select id="selectByCourseId" resultMap="BaseResultMap">
+        SELECT * FROM resource
+        WHERE course_id = #{course_id}
+        ORDER BY display_order ASC
+    </select>
+
     <select id="selectMaxOrderUnderParent" resultType="Integer">
         SELECT MAX(display_order) FROM resource
         WHERE parent_node_id = #{parentId}

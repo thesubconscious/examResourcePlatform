@@ -9,12 +9,12 @@ import {useRouter} from "vue-router";
 
 const { t } = useI18n();
 const router = useRouter()
-const formData = ref<Course>({
+const formData = ref({
   course_id: '',
-  name: '',
-  introduction: '',
-  img_path: '',
-  teacher: ''
+  parent_node_id: '',
+  type: '',
+  title: '',
+  teacher_id: ''
 });
 const emit = defineEmits<{
   (event: 'message', message: string): void;

@@ -78,7 +78,7 @@ public class ResourceController {
 
     @GetMapping
     public ResponseEntity<?> handleGetAllResourcesByCouseID(@PathVariable int id){
-        List<Resource> list = resourceService.getChildren(id);
+        List<Resource> list = resourceService.getAll(id);
         if(list.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("There is no resource");
         }

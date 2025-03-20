@@ -43,8 +43,8 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceMapper, Resource>
         }
 
         // 自动填充显示顺序
-        Integer maxOrder = resourceMapper.selectMaxOrderUnderParent(resource.getParent_node_id());
-        resource.setDisplay_order(maxOrder != null ? maxOrder + 1 : 0);
+        int maxOrder = resourceMapper.selectMaxOrderUnderParent(resource.getParent_node_id());
+        resource.setDisplay_order(maxOrder != 0 ? maxOrder + 1 : 0);
 
         resourceMapper.insertResource(resource);
         return resource;
@@ -217,6 +217,12 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceMapper, Resource>
         return parentId == null ?
                 Collections.emptyList() :
                 resourceMapper.selectChildren(parentId);
+    }
+
+    public List<Resource> getAll(Integer courseId){
+        return courseId == null ?
+                Collections.emptyList() :
+                resourceMapper.selectChildren(courseId);
     }
 
 }

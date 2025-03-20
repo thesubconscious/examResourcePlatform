@@ -8,6 +8,7 @@ import CourseIntro from "@/components/CourseIntro.vue";
 import type ResourceViewer from "@/components/ResourceViewer.vue";
 import {resourceService} from "@/services/resourceService";
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import Modal from "@/components/modal/Modal.vue";
 // import {faPlus} from "@fortawesome/free-solid-svg-icons";
 // import { library } from '@fortawesome/fontawesome-svg-core';
 // library.add(faPlus);
@@ -20,11 +21,12 @@ const currentProps = ref({});
 
 const currentCourse = ref<Course>();
 const resources = ref([]);
+const showModal = ref(false);
+const modalType = ref('');
 
 onMounted(async () => {
   try {
-    const res = await courseService.getCoursesDetails(route.params.id);
-    currentCourse.value = res;
+    currentCourse.value = await courseService.getCoursesDetails(route.params.id);
     console.log(currentCourse.value);
     currentProps.value = {
       name: currentCourse.value.name,
@@ -44,6 +46,14 @@ onMounted(async () => {
   }
 })
 
+const closeModal = () => {
+  showModal.value = false;
+}
+
+const createResource = () => {
+  showModal.value = true;
+  modalType.value = 'createResource';
+}
 </script>
 
 <template>
@@ -63,6 +73,7 @@ onMounted(async () => {
     </div>
   </div>
 
+  <modal :showModal="showModal" @closeModal="closeModal" :modalType="modalType" />
   <Footer/>
 </template>
 

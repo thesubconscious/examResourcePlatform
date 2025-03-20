@@ -22,6 +22,7 @@ public interface ResourceMapper extends BaseMapper<Resource> {
     int selectMaxOrderUnderParent(@Param("parentId") int parentId);
     Resource selectById(@Param("nodeId") int nodeId);
     List<Resource> selectChildren(@Param("parentId") Integer parentId);
+    List<Resource> selectByCourseId(@Param("parentId") Integer course_id);
 }
 
 
