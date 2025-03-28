@@ -5,6 +5,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faPlus);
 import Modal from "@/components/modal/Modal.vue";
 import {ref} from "vue";
+import {authManager} from "@/services/AuthManager";
 
 const props = defineProps({
   name:String,
@@ -22,6 +23,10 @@ const openModal = () => {
   showModal.value = true;
   modalType.value = 'uploadFileCourse';
 }
+
+const teacherExist = () => {
+  return authManager.isLoggedIn && (localStorage.getItem("identity") === 'teacher'||'admin');
+}
 </script>
 
 <template>
@@ -29,6 +34,7 @@ const openModal = () => {
     <div class="image-container">
     <img :src="path" alt="课程封面" />
       <font-awesome-icon
+          v-if="teacherExist()"
           :icon="['fas', 'plus']"
           class="upload-trigger"
           @click="openModal"

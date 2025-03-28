@@ -71,6 +71,16 @@ class ResourceService {
         }
     }
 
+    async deleteResource(id: string, course_id: string){
+        try {
+            const { data } = await this.apiClient.delete(`/courses/${course_id}/resources/${id}`)
+            // console.log(data);
+            return data
+        } catch(err) {
+            throw new Error(`删除资源失败：${(err as AxiosError).message}`)
+        }
+    }
+
 }
 
 export const resourceService = new ResourceService();

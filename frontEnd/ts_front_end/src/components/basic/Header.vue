@@ -1,18 +1,20 @@
 <script setup lang="ts">
 import {computed, ref} from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
+import {faArrowLeft, faUserCircle} from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
-library.add(faUserCircle);
+library.add(faUserCircle,faArrowLeft);
 import {authManager} from "@/services/AuthManager";
-import { useRouter } from 'vue-router'
+import {useRoute, useRouter} from 'vue-router'
 import Modal from "@/components/modal/Modal.vue";
+const router = useRouter()
+const route = useRoute()
 
 const menuVisible = ref(false);
 const showModal = ref(false);
 const modalType = ref('');
 
-const router = useRouter()
+const isCourseDetail = computed(() => route.path.startsWith('/courses/'))
 
 const toggleMenu = () => {
   menuVisible.value = !menuVisible.value;
@@ -44,7 +46,8 @@ const closeModal = () => {
 
 <template>
   <div class="header">
-    <FontAwesomeIcon :icon="['fas', 'user-circle']" @click="toggleMenu" class="icon"/>
+    <FontAwesomeIcon :icon="faArrowLeft" @click="$router.go(-1)" class="icon-left" v-if="isCourseDetail"/>
+    <FontAwesomeIcon :icon="['fas', 'user-circle']" @click="toggleMenu" class="icon-right"/>
     <div v-if="menuVisible" class="menu">
       <p v-if="userExist()" @click="jumpToDashboardPage()">个人页</p>
       <div v-else class="auth-buttons">
@@ -79,7 +82,14 @@ const closeModal = () => {
 }
 
 /* icon */
-.icon {
+.icon-left {
+  height: 80%;
+  position: absolute;
+  left: 1%;
+  top:10%;
+  cursor: pointer;
+}
+.icon-right {
   height: 80%;
   position: absolute;
   right: 1%;

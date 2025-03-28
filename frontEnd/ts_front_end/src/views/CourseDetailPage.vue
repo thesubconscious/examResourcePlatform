@@ -113,7 +113,6 @@ const openResourceViewer = (node: ResourceNode) => {
 <!--          @click="createResource"-->
 <!--      />-->
       <button v-if="teacherExist()" @click="createResource" >创建资源</button>
-
       <!-- 层级结构 -->
       <div class="tree-view">
         <!-- 修改章节循环 -->

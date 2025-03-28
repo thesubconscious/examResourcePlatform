@@ -3,9 +3,9 @@
     <Header/>
 
     <div class="main">
-      <div class="navbar">
-        <h2>{{ $t('main.nav.title') }}</h2>
-      </div>
+<!--      <div class="navbar">-->
+<!--        <h2>{{ $t('main.nav.title') }}</h2>-->
+<!--      </div>-->
 
       <div class="right-area">
         <div class="header">
@@ -91,6 +91,36 @@ const hotCourseList = ref<Course[]>([
       name: 'T800',
       teacher_id: '800'
     }
+  },
+  {
+    course_id: "103",
+    name: "Fullstack Development with Node.js",
+    introduction: "Build scalable applications using Node.js and Express.",
+    img_path: "/course/103.jpg",
+    teacher: {
+      name: 'T800',
+      teacher_id: '800'
+    }
+  },
+  {
+    course_id: "103",
+    name: "Fullstack Development with Node.js",
+    introduction: "Build scalable applications using Node.js and Express.",
+    img_path: "/course/103.jpg",
+    teacher: {
+      name: 'T800',
+      teacher_id: '800'
+    }
+  },
+  {
+    course_id: "103",
+    name: "Fullstack Development with Node.js",
+    introduction: "Build scalable applications using Node.js and Express.",
+    img_path: "/course/103.jpg",
+    teacher: {
+      name: 'T800',
+      teacher_id: '800'
+    }
   }
 ]) // 暂时写死
 
@@ -115,11 +145,13 @@ const scrollToContent = () => {
 }
 
 .main {
+/*  position: relative;
+  left: 18%;*/
   display: flex;
   gap: 24px;
-  margin: 6vh 2% 2% 1%;
-  max-width: 1280px;
-  width: 95%;
+  /*margin: 6vh 2% 2% 1%;*/ margin: 6vh auto 1%;
+  /*max-width: 1280px;*/
+  width: 60%;
 }
 
 .navbar {
@@ -135,7 +167,7 @@ const scrollToContent = () => {
 
 .right-area {
   display: flex;
-  flex-direction: column; /* 关键改动 */
+  flex-direction: column;
   flex: 1;
   gap: 24px;
 }
@@ -177,6 +209,10 @@ const scrollToContent = () => {
 }
 
 .content {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+
   background: white;
   border-radius: 12px;
   padding: 24px;

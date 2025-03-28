@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import {onMounted, ref} from 'vue';
 import InputField from "@/components/basic/InputField.vue";
 import SubmitButton from "@/components/basic/SubmitButton.vue";
 import { UserService } from '@/services/userService';
@@ -21,7 +21,18 @@ const formData = ref({
   confirmPassword: '',
   identity: ''
 });
+const identityOptions = ref<Array<{ name: string }>>([])
 
+onMounted( () =>{
+  identityOptions.value = [
+      {
+        name:"teacher"
+      },
+    {
+      name:"student"
+    }
+  ]
+})
 const emit = defineEmits<{
   (e: 'message', errorMessage: string): void;
 }>();
@@ -65,7 +76,22 @@ const handleSubmit = async () => {
       <input-field v-if="!isLogin" type="name" label="名称：" v-model="formData.name" />
       <input-field type="password" label="密码：" v-model="formData.password" />
       <input-field v-if="!isLogin" type="password" label="确认密码：" v-model="formData.confirmPassword" />
-      <input-field v-if="!isLogin" type="identity" label="身份：" v-model="formData.identity" />
+<!--      <input-field v-if="!isLogin" type="identity" label="身份：" v-model="formData.identity" />-->
+      <div v-if="!isLogin" class="form-group">
+      <label >身份：</label>
+      <select
+          v-model="formData.identity"
+          class="form-select"
+      >
+        <option
+            v-for="identity in identityOptions"
+            :key="identity.name"
+            :value="identity.name"
+        >
+          {{ identity.name }}
+        </option>
+      </select>
+      </div>
 
       <submit-button :loading="isLoading" :label="isLogin ? '登录' : '注册'" />
     </form>
@@ -98,6 +124,34 @@ form {
   display: flex;
   flex-direction: column;
   gap: 1.5vh;
+}
+
+.form-group {
+  min-width: 52%;
+  display: flex; /* 使用 Flexbox 布局 */
+  align-items: center; /* 垂直居中对齐 */
+}
+
+.form-select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background-color: white;
+  transition: border-color 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: #4fd1c5;
+    box-shadow: 0 0 0 2px rgba(79, 209, 197, 0.2);
+  }
+}
+
+label {
+  display: inline-block;
+  font-size: 1.0rem;
+  margin-right: .5rem;
+  white-space: nowrap; /*禁止换行*/
 }
 
 

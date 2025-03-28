@@ -57,7 +57,7 @@ public class ResourceController {
     }
 
     @GetMapping("/{resource_id}")
-    public ResponseEntity<?> handleFileDownload(@PathVariable int resource_id) {
+    public ResponseEntity<?> handleFileDownload(@RequestBody int resource_id) {
         try {
             File file = resourceService.downloadFile(resource_id);
             Path filePath = Paths.get(file.getAbsolutePath());
@@ -78,7 +78,7 @@ public class ResourceController {
     }
 
     @DeleteMapping("/{resource_id}")
-    public ResponseEntity<?> handleFileDelete(@PathVariable int resource_id) {
+    public ResponseEntity<?> handleFileDelete(@RequestBody int resource_id) {
         try {
             resourceService.deleteResource(resource_id);
             return ResponseEntity.ok("Resource deleted successfully");
