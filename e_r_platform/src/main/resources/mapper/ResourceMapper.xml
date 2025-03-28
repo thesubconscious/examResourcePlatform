@@ -5,13 +5,13 @@
 <mapper namespace="com.e_r_platform.mapper.ResourceMapper">
 
     <resultMap id="BaseResultMap" type="com.e_r_platform.model.Resource">
-        <id column="node_id" property="nodeId"/>
-        <result column="course_id" property="courseId"/>
-        <result column="parent_node_id" property="parentNodeId"/>
+        <id column="node_id" property="node_id"/>
+        <result column="course_id" property="course_id"/>
+        <result column="parent_node_id" property="parent_node_id"/>
         <result column="type" property="type"/>
         <result column="title" property="title"/>
-        <result column="file_uri" property="fileUri"/>
-        <result column="display_order" property="displayOrder"/>
+        <result column="file_uri" property="file_uri"/>
+        <result column="display_order" property="display_order"/>
     </resultMap>
 
 <!--    <sql id="Base_Column_List">-->
@@ -19,11 +19,11 @@
 <!--        path-->
 <!--    </sql>-->
 
-    <insert id="insertResource" useGeneratedKeys="true" keyProperty="nodeId">
+    <insert id="insertResource" useGeneratedKeys="true">
         INSERT INTO resource
             (course_id, parent_node_id, type, title, file_uri, display_order)
         VALUES
-            (#{courseId}, #{parentNodeId}, #{type}, #{title}, #{fileUri}, #{displayOrder})
+            (#{course_id}, #{parent_node_id}, #{type}, #{title}, #{file_uri}, #{display_order})
     </insert>
 
     <update id="updateResource" parameterType="com.e_r_platform.model.Resource">
@@ -59,14 +59,26 @@
         ORDER BY display_order ASC
     </select>
 
-    <select id="selectByCourseId" resultMap="BaseResultMap">
+    <select id="selectAll" resultMap="BaseResultMap">
         SELECT * FROM resource
         WHERE course_id = #{course_id}
         ORDER BY display_order ASC
     </select>
 
-    <select id="selectMaxOrderUnderParent" resultType="Integer">
-        SELECT MAX(display_order) FROM resource
+    <select id="selectChapters" resultMap="BaseResultMap">
+        SELECT * FROM resource
+        WHERE course_id = #{course_id}
+          and type = 'CHAPTER'
+        ORDER BY display_order ASC
+    </select>
+
+    <select id="selectMaxOrderForChapter" resultType="Integer">
+        SELECT COALESCE(MAX(display_order), 0) FROM resource
+        WHERE course_id = #{parentId}
+    </select>
+
+    <select id="selectMaxOrderForLeaf" resultType="Integer">
+        SELECT COALESCE(MAX(display_order), 0) FROM resource
         WHERE parent_node_id = #{parentId}
     </select>
 

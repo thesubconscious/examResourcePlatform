@@ -6,8 +6,10 @@ import {useRoute} from "vue-router";
 const router = useRoute()
 const props = defineProps({
   uploadType: String,
+  parentProgress: Number,
+  fileReceived: Boolean
 })
-const emit = defineEmits(['message'])
+const emit = defineEmits(['message','file-uploaded'])
 const fileInput = ref<HTMLInputElement>()
 const isDragging = ref(false)
 const progress = ref(0)
@@ -19,6 +21,12 @@ onMounted( () => {
   // console.log(router.params?.id)
 })
 
+const fileAccept = computed(() => {
+  if (props.uploadType === 'uploadFileCourse') {
+    return 'image/jpeg, image/png'
+  }
+  return 'video/*, application/pdf' // 视频和PDF类型
+})
 
 // 处理文件选择
 const handleFilePreCheck = (file: File) => {
@@ -27,6 +35,8 @@ const handleFilePreCheck = (file: File) => {
       emit('message','只能上传图片文件！')
       return
     }
+  }else if(props.uploadType === 'uploadFileResource-post' || props.uploadType === 'uploadFileResource'){
+
   }
 
   handleFileUpload(file)
@@ -51,10 +61,16 @@ const triggerInput = () => {
   fileInput.value?.click()
 }
 
+// 合并进度显示
+const mergedProgress = computed(() => {
+  return props.uploadType === 'uploadFileResource-post'
+      ? (props.parentProgress || 0)
+      : progress.value
+})
+
 const handleFileUpload = async (file: File) => {
   if(props.uploadType === 'uploadFileCourse'){
     try {
-
       const response = await courseService.updateCourse(
           {
             "course_id":courseId.value.toString()
@@ -70,6 +86,9 @@ const handleFileUpload = async (file: File) => {
       emit('message', err)
       progress.value = -1 // 错误状态
     }
+  }
+  else if (props.uploadType === 'uploadFileResource-post'){
+    emit('file-uploaded', file);
   }
 
 }
@@ -88,12 +107,20 @@ const handleFileUpload = async (file: File) => {
         @click="triggerInput"
     >
       <div class="upload-prompt">
-        <svg class="upload-icon" viewBox="0 0 24 24">
-          <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
-        </svg>
-        <p>拖放文件到这里或点击选择</p>
-        <p v-if="props.uploadType === 'uploadFileCourse'" class="hint">仅支持图片格式（JPG/PNG）</p>
-        <p v-else class="hint">仅支持视频和pdf格式</p>
+        <template v-if="!fileReceived">
+          <svg class="upload-icon" viewBox="0 0 24 24">
+            <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+          </svg>
+          <p>拖放文件到这里或点击选择</p>
+          <p v-if="props.uploadType === 'uploadFileCourse'" class="hint">仅支持图片格式（JPG/PNG）</p>
+          <p v-else class="hint">仅支持视频和pdf格式</p>
+        </template>
+        <template v-else>
+          <svg class="check-icon" viewBox="0 0 24 24">
+            <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+          </svg>
+          <p>文件已就绪，点击提交上传</p>
+        </template>
       </div>
     </div>
 
@@ -101,16 +128,16 @@ const handleFileUpload = async (file: File) => {
     <div class="progress-bar">
       <div
           class="progress-fill"
-          :style="{ width: `${progress}%` }"
+          :style="{ width: `${mergedProgress}%` }"
       ></div>
-      <span class="progress-text">{{ progress }}%</span>
+      <span class="progress-text">{{ mergedProgress }}%</span>
     </div>
 
     <!-- 隐藏的input -->
     <input
         ref="fileInput"
         type="file"
-        accept="image/jpeg, image/png"
+        :accept="fileAccept"
         class="hidden-input"
         @change="(e) => handleFilePreCheck((e.target as HTMLInputElement).files?.[0]!)"
     />
@@ -168,7 +195,7 @@ const handleFileUpload = async (file: File) => {
 .progress-bar {
   flex: 0.2;
   height: calc(20% - 1rem);
-  background: #eee;
+  background: #b2afaf;
   border-radius: 8px;
   margin:10px;
   position: relative;
@@ -179,7 +206,7 @@ const handleFileUpload = async (file: File) => {
 .progress-fill {
   height:100%;
   background:#4CAF50;
-  transition:width0.3s ease;
+  transition:width 0.3s ease;
 }
 
 .progress-text{
@@ -193,5 +220,18 @@ const handleFileUpload = async (file: File) => {
 
 .hidden-input{
   display: none;
+}
+
+.check-icon {
+  width: 48px;
+  height: 48px;
+  fill: #4CAF50;
+  animation: bounceIn 0.5s;
+}
+
+@keyframes bounceIn {
+  0% { transform: scale(0.8); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
 }
 </style>

@@ -8,6 +8,7 @@ class AuthManager {
         try {
             const userService = new UserService();
             const { expiresIn, isAuthenticated }  = await userService.authCheck();
+            console.log(isAuthenticated);
             const serverTime = Date.now() + expiresIn; // 假设expiresIn单位是秒
             // const clientTime = Date.now() + 300_000;
             // const actualExpire = Math.min(serverTime, clientTime);

@@ -6,6 +6,7 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import UploadResourceForm from "@/components/modal/uploadResourceForm.vue";
+import CreateResourceForm from "@/components/modal/CreateResourceForm.vue";
 
 library.add(faTimes);
 
@@ -59,7 +60,13 @@ const handleMessage = (message: string) => {
           />
         </div>
 
-        <div v-if="modalType === 'uploadFileCourse' ">
+        <div v-if="modalType === 'createResource'">
+          <create-resource-form
+              @message = "handleMessage"
+          />
+        </div>
+
+        <div v-if="modalType === 'uploadFileCourse' || modalType === 'uploadFileResource' ">
           <upload-resource-form
             :uploadType = "modalType"
             @message = "handleMessage"

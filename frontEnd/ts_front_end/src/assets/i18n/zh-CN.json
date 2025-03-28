@@ -21,7 +21,8 @@
     "logout": "登出"
   },
   "main": {
-    "title": "标题",
+    "title": "热门课程",
+    "more": "查看更多",
     "nav": {
       "title": "过滤器"
     }
@@ -32,6 +33,16 @@
       "name": "名字：",
       "introduction": "简介：",
       "submit": "提交"
+    }
+  },
+  "createResourceForm": {
+    "title": "创建资源",
+    "form": {
+      "title": "节点名",
+      "typeLabel": "资源类型",
+      "chapterType": "章节",
+      "leafType": "子节点",
+      "parentChapter": "所属章节"
     }
   }
 }

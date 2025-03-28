@@ -29,13 +29,14 @@ public class ResourceController {
     private ResourceServiceImpl resourceService;
 
     @PostMapping
-    public ResponseEntity<?> handleFileUpload(@RequestPart("resource") Resource resource, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<?> handleFileUpload(@RequestPart("resource") Resource resource,
+                                              @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
             Resource res = resourceService.createResource(resource, file);
 
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put("message", "Resource upload successfully.");
-            responseBody.put("resource_id", resource.getNode_id());
+            responseBody.put("resource_id", res.getNode_id());
             return ResponseEntity.ok(responseBody);
 
         } catch (IllegalArgumentException e) {
@@ -76,17 +77,6 @@ public class ResourceController {
         }
     }
 
-    @GetMapping
-    public ResponseEntity<?> handleGetAllResourcesByCouseID(@PathVariable int id){
-        List<Resource> list = resourceService.getAll(id);
-        if(list.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("There is no resource");
-        }
-        else{
-            return ResponseEntity.ok(list);
-        }
-    }
-
     @DeleteMapping("/{resource_id}")
     public ResponseEntity<?> handleFileDelete(@PathVariable int resource_id) {
         try {
@@ -101,4 +91,25 @@ public class ResourceController {
         }
     }
 
+    @GetMapping
+    public ResponseEntity<?> handleGetAllResourcesByCouseID(@PathVariable int id){
+        List<Resource> list = resourceService.getAll(id);
+        if(list.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("There is no resource");
+        }
+        else{
+            return ResponseEntity.ok(list);
+        }
+    }
+
+    @GetMapping("/chapters")
+    public ResponseEntity<?> handleGetAllChaptersByCouseID(@PathVariable int id){
+        List<Resource> list = resourceService.getAllChapters(id);
+        if(list.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("There is no resource");
+        }
+        else{
+            return ResponseEntity.ok(list);
+        }
+    }
 }

@@ -19,10 +19,12 @@ public interface ResourceMapper extends BaseMapper<Resource> {
     int decrementOrderAfterDelete(@Param("parentId") Integer parentId,
                                   @Param("deletedOrder") int deletedOrder);
     int deleteById(@Param("nodeId") int nodeId);
-    int selectMaxOrderUnderParent(@Param("parentId") int parentId);
+    int selectMaxOrderForChapter(@Param("parentId") int parentId);
+    int selectMaxOrderForLeaf(@Param("parentId") int parentId);
     Resource selectById(@Param("nodeId") int nodeId);
     List<Resource> selectChildren(@Param("parentId") Integer parentId);
-    List<Resource> selectByCourseId(@Param("parentId") Integer course_id);
+    List<Resource> selectAll(@Param("course_id") Integer course_id);
+    List<Resource> selectChapters(@Param("course_id") Integer course_id);
 }
 
 

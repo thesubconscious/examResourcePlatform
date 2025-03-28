@@ -142,9 +142,8 @@ const logout = async() => {
 
 const changeLanguage = () => {
   const newLang = i18n.global.locale.value === 'zh-CN' ? 'en' : 'zh-CN' //TODO: 之后用Modal选择语言
-  localStorage.setItem('userLang', newLang) // ← 关键存储
+  localStorage.setItem('userLang', newLang) // 存储
   i18n.global.locale.value = newLang
-  // 记得把语言设置存到localStorage或pinia/vuex里！
 }
 
 const jumpToMain = () => {

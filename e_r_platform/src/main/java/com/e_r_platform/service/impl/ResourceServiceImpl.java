@@ -37,15 +37,18 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceMapper, Resource>
         if (resource.getType() == Resource.NodeType.LEAF) {
             if (file == null || file.isEmpty()) {
                 throw new IllegalArgumentException("叶子节点必须上传文件");
-            }
 
+            }
             uploadFile(resource, file);
         }
 
         // 自动填充显示顺序
-        int maxOrder = resourceMapper.selectMaxOrderUnderParent(resource.getParent_node_id());
-        resource.setDisplay_order(maxOrder != 0 ? maxOrder + 1 : 0);
-
+        int maxOrder = 0;
+        if (resource.getType() == Resource.NodeType.LEAF)
+            maxOrder = resourceMapper.selectMaxOrderForLeaf(resource.getParent_node_id());
+        else if (resource.getType() == Resource.NodeType.CHAPTER)
+            maxOrder = resourceMapper.selectMaxOrderForChapter(resource.getCourse_id());
+        resource.setDisplay_order(maxOrder != 0 ? maxOrder + 1 : 1);
         resourceMapper.insertResource(resource);
         return resource;
     }
@@ -71,7 +74,7 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceMapper, Resource>
         }
 
         // 添加当前节点空间
-        pathSegments.add("temp_"+resource.getNode_id()); // 先占位后续替换
+//        pathSegments.add("temp_"+resource.getNode_id()); // 先占位后续替换
 
         // 组装完整路径
         String relativePath =  String.join("/", pathSegments)
@@ -222,7 +225,13 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceMapper, Resource>
     public List<Resource> getAll(Integer courseId){
         return courseId == null ?
                 Collections.emptyList() :
-                resourceMapper.selectChildren(courseId);
+                resourceMapper.selectAll(courseId);
+    }
+
+    public List<Resource> getAllChapters(Integer courseId){
+        return courseId == null ?
+                Collections.emptyList() :
+                resourceMapper.selectChapters(courseId);
     }
 
 }

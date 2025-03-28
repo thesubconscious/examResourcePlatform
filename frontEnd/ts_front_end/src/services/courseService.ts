@@ -97,11 +97,10 @@ class CourseService {
                 }
             );
         } else {
-            // 无文件时使用普通JSON格式
             return this.apiClient.patch(
                 `/courses/${course.course_id}`,
-                JSON.stringify(course),
-                { headers: { 'Content-Type': 'application/json' } }
+                formData,
+                { headers: { 'Content-Type': 'multipart/form-data' } }
             );
         }
     }

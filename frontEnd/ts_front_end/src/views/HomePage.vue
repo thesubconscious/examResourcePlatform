@@ -25,8 +25,8 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faUserCircle);
 import {useRouter} from "vue-router";
 import Modal from "@/components/modal/Modal.vue";
-import Header from "@/components/Header.vue";
-import Footer from "@/components/Footer.vue";
+import Header from "@/components/basic/Header.vue";
+import Footer from "@/components/basic/Footer.vue";
 
 const router = useRouter()
 

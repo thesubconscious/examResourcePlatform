@@ -55,7 +55,8 @@ export class UserService {
     async getUserDetails(id:string){
         try {
             const { data } = await this.apiClient.get(`/users/${id}`)
-            console.debug('用户详情:', data)
+            localStorage.setItem('identity', data.identity);
+            // console.debug('用户详情:', data)
             return data
         } catch(err) {
             throw new Error(`获取详情失败：${(err as AxiosError).message}`)
@@ -67,6 +68,7 @@ export class UserService {
             const { data } = await this.apiClient.post('/users/logout')
             localStorage.removeItem('userId')
             localStorage.removeItem('auth_expire')
+            localStorage.removeItem('identity')
             authManager.stopPolling()
             return '成功登出'
         } catch(err) {
