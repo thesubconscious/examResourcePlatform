@@ -4,8 +4,8 @@ import { useRoute } from 'vue-router'
 import {courseService} from "@/services/courseService";
 import Footer from "@/components/basic/Footer.vue";
 import Header from "@/components/basic/Header.vue";
-import CourseIntro from "@/components/CourseIntro.vue";
-import ResourceViewer from "@/components/ResourceViewer.vue";
+import CourseIntro from "@/components/courseDetail/CourseIntro.vue";
+import ResourceViewer from "@/components/courseDetail/ResourceViewer.vue";
 import {resourceService} from "@/services/resourceService";
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Modal from "@/components/modal/Modal.vue";

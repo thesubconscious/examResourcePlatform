@@ -34,6 +34,7 @@ export class UserService {
             const {data} = await this.apiClient.post('/users/login',{email,password})
             localStorage.setItem('userId', data.userId);
             // authManager.userId = data.userId;
+            authManager.stopPolling()
             authManager.startPolling()
             return data
         }catch (err){

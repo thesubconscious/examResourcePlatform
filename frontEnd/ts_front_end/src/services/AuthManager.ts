@@ -7,9 +7,15 @@ class AuthManager {
     public async checkAuthStatus() {
         try {
             const userService = new UserService();
-            const { expiresIn, isAuthenticated }  = await userService.authCheck();
-            console.log(isAuthenticated);
-            const serverTime = Date.now() + expiresIn; // 假设expiresIn单位是秒
+            const {expiresIn, isAuthenticated} = await userService.authCheck();
+            console.log(isAuthenticated, ' checkTime: '+ new Date(Date.now()).toISOString());
+            if (!isAuthenticated) {
+                localStorage.removeItem('auth_expire');
+                localStorage.removeItem('userId');
+                localStorage.removeItem('identity');
+                return;
+            }
+            const serverTime = Date.now() + expiresIn;
             // const clientTime = Date.now() + 300_000;
             // const actualExpire = Math.min(serverTime, clientTime);
             const actualExpire = serverTime;
@@ -23,7 +29,7 @@ class AuthManager {
 
     // 启动定时检测（在登录成功后调用）
     public startPolling() {
-        this.stopPolling(); // 防止重复启动
+        // this.stopPolling(); // 防止重复启动
 
 // 立即执行首次检查
         this.checkAuthStatus();
@@ -46,7 +52,7 @@ class AuthManager {
 
     // 实时登录态判断
     public get isLoggedIn() {
-        if(localStorage.getItem('auth_expire')){
+        if (localStorage.getItem('auth_expire')) {
             let compare = Number(localStorage.getItem('auth_expire')) > Date.now();
             console.log("过期时间：", new Date(Number(localStorage.getItem('auth_expire'))).toISOString());
             console.log("当前时间：", new Date(Date.now()).toISOString())

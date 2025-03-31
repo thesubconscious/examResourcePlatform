@@ -20,7 +20,7 @@
                 v-for="course in hotCourseList"
                 :key="course.course_id"
                 class="course-item"
-                @click="handleCourseClick(course.course_id)"
+                @click="jumpToPage($event, 'CourseDetailPage', course.course_id)"
             >
               <img :src="course.img_path">
               {{ course.name }} - {{ course.teacher.name }}
@@ -34,7 +34,7 @@
                 v-for="course in courseList"
                 :key="course.course_id"
                 class="course-item"
-                @click="handleCourseClick(course.course_id)"
+                @click="jumpToPage($event, 'CourseDetailPage', course.course_id)"
             >
               <img :src="'/src/assets'+course.img_path" alt="">
               {{ course.name }} - {{ course.teacher.name }}
@@ -44,6 +44,7 @@
 
         </div>
       </div>
+
     </div>
     <Footer/>
   </div>
@@ -63,63 +64,63 @@ const router = useRouter();
 const courseList = ref<Course[]>([])
 const hotCourseList = ref<Course[]>([
   {
-    course_id: "101",
+    course_id: 101,
     name: "Introduction to TypeScript",
     introduction: "Learn the basics of TypeScript, a typed superset of JavaScript.",
     img_path: "/course/101.jpg",
     teacher: {
       name: 'T800',
-      teacher_id: '800'
+      teacher_id: 800
     }
   },
   {
-    course_id: "102",
+    course_id: 102,
     name: "Advanced Vue.js Techniques",
     introduction: "Deep dive into advanced features and patterns in Vue.js.",
     img_path: "/course/102.jpg",
     teacher: {
       name: 'T800',
-      teacher_id: '800'
+      teacher_id: 800
     }
   },
   {
-    course_id: "103",
+    course_id: 103,
     name: "Fullstack Development with Node.js",
     introduction: "Build scalable applications using Node.js and Express.",
     img_path: "/course/103.jpg",
     teacher: {
       name: 'T800',
-      teacher_id: '800'
+      teacher_id: 800
     }
   },
   {
-    course_id: "103",
-    name: "Fullstack Development with Node.js",
-    introduction: "Build scalable applications using Node.js and Express.",
-    img_path: "/course/103.jpg",
+    course_id: 104,
+    name: "Cloud Native Architecture",
+    introduction: "Designing scalable cloud-based systems with Kubernetes",
+    img_path: "/course/104.jpg",
     teacher: {
       name: 'T800',
-      teacher_id: '800'
+      teacher_id: 800
     }
   },
   {
-    course_id: "103",
-    name: "Fullstack Development with Node.js",
-    introduction: "Build scalable applications using Node.js and Express.",
-    img_path: "/course/103.jpg",
+    course_id: 105,
+    name: "GraphQL API Design",
+    introduction: "Master modern API development with GraphQL schemas",
+    img_path: "/course/105.jpg",
     teacher: {
       name: 'T800',
-      teacher_id: '800'
+      teacher_id: 800
     }
   },
   {
-    course_id: "103",
-    name: "Fullstack Development with Node.js",
-    introduction: "Build scalable applications using Node.js and Express.",
-    img_path: "/course/103.jpg",
+    course_id: 106,
+    name: "Web Security Essentials",
+    introduction: "Prevent XSS/CSRF attacks in modern web apps",
+    img_path: "/course/106.jpg",
     teacher: {
       name: 'T800',
-      teacher_id: '800'
+      teacher_id: 800
     }
   }
 ]) // 暂时写死
@@ -129,9 +130,20 @@ onMounted(async () => {
   console.log(courseList.value)
 });
 
-const handleCourseClick = (courseId: string) => {
+const handleCourseClick = (courseId: number) => {
   router.push({name: 'CourseDetailPage', params: {id: courseId}});
 }
+
+const jumpToPage = (event: MouseEvent, routeName: string, courseId: number) => {
+  const path = router.resolve({ name: routeName, params: {id: courseId} }).href;
+
+  if (event.ctrlKey || event.metaKey || event.shiftKey) {
+    window.open(path, '_blank')
+  }else{
+    router.push({name: routeName, params: {id: courseId}});
+  }
+}
+
 
 const scrollToContent = () => {
   document.getElementById('contentTarget')?.scrollIntoView({behavior: 'smooth'})
@@ -208,7 +220,7 @@ const scrollToContent = () => {
   gap: 16px;
 }
 
-.content {
+.content .coursesList{
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 16px;

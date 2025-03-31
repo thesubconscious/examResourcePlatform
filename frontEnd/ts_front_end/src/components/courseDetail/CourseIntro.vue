@@ -40,7 +40,9 @@ const teacherExist = () => {
           @click="openModal"
       />
     </div>
-    <h1>{{name}}</h1>
+    <div class="title">
+    <h1>{{name}}</h1> <button> 加入课程 </button>
+    </div>
     <div class="introduction"><p>介绍：{{ introduction }}</p></div>
 
     <modal :showModal="showModal" @closeModal="closeModal" :modalType="modalType" />
@@ -80,6 +82,26 @@ const teacherExist = () => {
   &:hover {
     transform: scale(1.1);
     color: #07a817;
+  }
+}
+
+.title{
+  min-width: 70%;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+
+  h1 {
+    flex: 1; /*吃掉剩余空间*/
+    text-align: center;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  button{
+    position: relative;
+    right: 0;
   }
 }
 

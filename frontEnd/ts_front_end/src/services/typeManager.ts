@@ -1,5 +1,5 @@
 interface Course {
-    course_id: string
+    course_id: number
     name: string
     introduction: string
     img_path: string
@@ -8,5 +8,5 @@ interface Course {
 
 interface Teacher {
     name: string
-    teacher_id: string
+    teacher_id: number
 }
