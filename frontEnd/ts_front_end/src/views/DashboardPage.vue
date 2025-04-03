@@ -106,9 +106,9 @@ const originalButton = ref<HTMLElement>()
 const floatingButton = ref<HTMLElement>()
 const capturePosition = async () => {
   await nextTick()
-  if (!originalButton.value) return
+  if (!floatingButton.value) return
 
-  const rect = originalButton.value.getBoundingClientRect()
+  const rect = floatingButton.value.getBoundingClientRect()
 
   interfaceState.originPos = {
     x: rect.left + window.scrollX,
@@ -120,16 +120,10 @@ const capturePosition = async () => {
 const toggleInterface = () => {
   if (interfaceState.isCollapsed) {
     interfaceState.listVisible = false
-    // interfaceState.isReturning = true
-    setTimeout(() => {
-      interfaceState.isCollapsed = false
-      // interfaceState.isReturning = false
-    }, 300)
+    setTimeout(() => { interfaceState.isCollapsed = false }, 200)  // 等动画完成
   } else {
     interfaceState.isCollapsed = true
-    setTimeout(() => {
-      interfaceState.listVisible = true
-    }, 500)
+    setTimeout(() => { interfaceState.listVisible = true }, 600) // 等动画完成
   }
 }
 
@@ -148,11 +142,7 @@ const toggleInterface = () => {
         <!-- 独立出来的列表按钮，用绝对定位 -->
         <div
             ref="floatingButton"
-            class="icon-wrapper"
-            :style="{
-              '--start-x': `${interfaceState.originPos.x}px`,
-              '--start-y': `${interfaceState.originPos.y}px`
-            }"
+            class="icon-wrapper non-display"
             :class="{ active: interfaceState.isCollapsed}"
             @click="toggleInterface"
         >
@@ -160,8 +150,9 @@ const toggleInterface = () => {
           <span >{{ $t('dashboard.courseAction.list') }}</span>
         </div>
 
-        <transition-group name="collapse" tag="div" class="main-content"><!-- 需要消失的部分用transition-group包裹 -->
-          <div v-if="!interfaceState.isCollapsed" key="original" class="original-elements">
+        <transition-group name="collapse" tag="div">
+<!--          <div v-if="!interfaceState.isCollapsed" key="original">-->
+          <div key="original">
 
         <!-- 头部信息区 -->
         <div class="dashboard-header">
@@ -204,10 +195,13 @@ const toggleInterface = () => {
                 <font-awesome-icon :icon="['fas', 'folder-plus']" class="icon-container"/>
                 <span class="button-caption">{{ $t('dashboard.courseAction.create') }}</span>
               </div>
-              <div class="icon-wrapper" id="list-button" ref="originalButton" @click="toggleInterface">
+<!--              <transition name="flying-button" mode="out-in">-->
+              <div class="icon-wrapper" id="list-button" ref="originalButton" @click="toggleInterface"
+                   :class="{ 'flying': interfaceState.isCollapsed }">
                 <font-awesome-icon :icon="['fas', 'book']" class="icon-container"/>
                 <span class="button-caption">{{ $t('dashboard.courseAction.list') }}</span>
               </div>
+<!--              </transition>-->
             </div>
 
             <!-- 标签栏3：系统功能区 -->
@@ -216,7 +210,7 @@ const toggleInterface = () => {
                 <font-awesome-icon :icon="['fas', 'language']" class="icon-container"/>
                 <span class="button-caption">{{ $t('dashboard.switchLanguageButton') }}</span>
               </div>
-              <div class="icon-wrapper" @click="logout">
+              <div class="icon-wrapper" @click="logout" >
                 <font-awesome-icon :icon="['fas', 'right-from-bracket']" class="icon-container"/>
                 <span class="button-caption">{{ $t('dashboard.logout') }}</span>
               </div>
@@ -344,47 +338,21 @@ html, body {
   place-items: center;
 }
 
-
-.floating-button {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px; /* 图标和文字间距 */
-}
-
-/*.floating-list-button {
+.non-display{
+  opacity: 0;
+  visibility: hidden;
   position: absolute;
-  left: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  transition: all 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-  z-index: 100;
-
-  !* 原始状态样式 *!
-  opacity: 1;
-  cursor: pointer;
-  background: white;
-  padding: 12px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-.collapse-mode .floating-list-button {
+
+/*.collapse-mode #list-button {
   left: 20px !important;
   top: 20px !important;
   transform: translate(0, 0) !important;
-  width: 40px; !* 变成图标按钮 *!
 }*/
 
-/* 隐藏原始位置的按钮 */
-/*
-.hidden-list-button {
-  display: none !important;
-}
-*/
-
 /* 动画部分 */
-.fade-enter-active,
+/*.fade-enter-active,
 .fade-leave-active {
   transition: opacity .3s ease;
 }
@@ -392,28 +360,43 @@ html, body {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}*/
+
+.flying {
+  /* 魔法变形指令 */
+  transform: translate(-30vw, -30vh);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
 
 /* 主体内容消失动画 */
-.collapsed-mode #list-button {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+#list-button{
+  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/*
-.collapse-leave-active {
+.flying-button-leave-active {
+  /*transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);*/
+  transition: all 0.5s ease-out;
+  position: fixed;
+  z-index: 999; /* 确保在最上层运动 */
+}
+
+.flying-button-leave-to {
+  /*transform: translate(calc(-30vw + 120px), -30vh) scale(0.6);*/
+  transform: translate(-50%, -30vh) scale(0.6);
+  opacity: 0.5;
+}
+
+
+/*.collapse-leave-active {
   transition: all 1s ease-out;
   position: absolute;
   !*width: 100%;*!
 }
 .collapse-leave-to {
-  opacity: 0;
+  opacity: 0.5;
   transform: translateX(100%);
   !*transform: translate(-50%,-50%)*!
-}
-*/
+}*/
 
 /* 课程列表入场动画 */
 .slide-fade-enter-active {
