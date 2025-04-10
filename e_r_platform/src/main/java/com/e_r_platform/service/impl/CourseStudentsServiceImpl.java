@@ -1,6 +1,7 @@
 package com.e_r_platform.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.e_r_platform.model.Course;
 import com.e_r_platform.model.CourseStudents;
 import com.e_r_platform.service.CourseStudentsService;
 import com.e_r_platform.mapper.CourseStudentsMapper;
@@ -26,8 +27,8 @@ public class CourseStudentsServiceImpl extends ServiceImpl<CourseStudentsMapper,
         return list;
     }
 
-    public ArrayList<CourseStudents> getAllCourses(int student_id){
-        ArrayList<CourseStudents> list = courseStudentsMapper.getAllByStudentId(student_id);
+    public ArrayList<Course> getAllCourses(int student_id){
+        ArrayList<Course> list = courseStudentsMapper.getAllByStudentId(student_id);
         return list;
     }
 

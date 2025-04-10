@@ -41,28 +41,6 @@ class CourseService {
         }
     }
 
-    // async updateCourse(course: Course, file: File) {
-    //     const formData = new FormData();
-    //     formData.append('course', new Blob([JSON.stringify(course)], {
-    //         type: "application/json"
-    //     }));
-    //
-    //     if (file) {
-    //         formData.append('file', file);
-    //     }
-    //
-    //     try {
-    //         const {data} = await this.apiClient.patch(`/courses/${course.course_id}`, formData, {
-    //             headers: {
-    //                 'Content-Type': 'multipart/form-data' // 显式设置
-    //             }
-    //         });
-    //         return data;
-    //     } catch (err) {
-    //         throw new Error(`更新失败：${(err as AxiosError).message}`);
-    //     }
-    // }
-
     async updateCourse(
         course: Record<string, any>, // 任意JSON对象
         file?: File, // 明确标记为可选参数
@@ -102,6 +80,16 @@ class CourseService {
                 formData,
                 { headers: { 'Content-Type': 'multipart/form-data' } }
             );
+        }
+    }
+
+    async getStudentCourses(student_id: string) {
+        try {
+            const {data} = await this.apiClient.get(`/courses/students/${student_id}`)
+            // console.log(data);
+            return data
+        } catch (err) {
+            throw new Error(`获取课程失败：${(err as AxiosError).message}`)
         }
     }
 

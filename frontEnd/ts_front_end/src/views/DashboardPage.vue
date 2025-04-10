@@ -42,8 +42,6 @@ const baseTabs = computed(() => [
 ])
 
 onMounted(async () => {
-  await capturePosition();
-
   const id = localStorage.getItem("userId");
   if (id) {
     userDetails.value = await userService.getUserDetails(id);
@@ -97,37 +95,60 @@ const jumpToPage = (event: MouseEvent, routeName: string) => {
 
 // 新增返回状态控制
 const interfaceState = reactive({
-  isCollapsed: false,
+  isMasterViewActive: false,
   listVisible: false,
-  // isReturning: false,
-  originPos: { x: 0, y: 0 },
+  animationStart: false,
+  originPos: {x: 0, y: 0},
+  floatingPos: {x: 0, y: 0},
 })
-const originalButton = ref<HTMLElement>()
-const floatingButton = ref<HTMLElement>()
+const originalPos = ref<HTMLElement>()
+const floatingPos = ref<HTMLElement>()
+const currentPos = ref({ x:0, y:0 })
 const capturePosition = async () => {
   await nextTick()
-  if (!floatingButton.value) return
+  if (!floatingPos.value || !originalPos.value) return
 
-  const rect = floatingButton.value.getBoundingClientRect()
+  // 双位置同步捕获
+  const originRect = originalPos.value.getBoundingClientRect()
+  const floatRect = floatingPos.value.getBoundingClientRect()
 
   interfaceState.originPos = {
-    x: rect.left + window.scrollX,
-    y: rect.top + window.scrollY
+    x: originRect.left + window.scrollX,
+    y: originRect.top + window.scrollY
   }
-  console.log(rect)
+
+  interfaceState.floatingPos = {
+    x: floatRect.left + window.scrollX,
+    y: floatRect.top + window.scrollY
+  }
+
+  console.log(interfaceState)
 }
 
 const toggleInterface = () => {
-  if (interfaceState.isCollapsed) {
+  if (interfaceState.isMasterViewActive) {
     interfaceState.listVisible = false
-    setTimeout(() => { interfaceState.isCollapsed = false }, 200)  // 等动画完成
+    interfaceState.animationStart = false
+    setTimeout(() => {
+      interfaceState.isMasterViewActive = false
+    }, 600)  // 等动画完成
   } else {
-    interfaceState.isCollapsed = true
-    setTimeout(() => { interfaceState.listVisible = true }, 600) // 等动画完成
+    interfaceState.isMasterViewActive = true
+    interfaceState.animationStart = true
+    setTimeout(() => {
+      interfaceState.listVisible = true
+    }, 600) // 等动画完成
   }
 }
 
+const clickActiveTab = async (name: string) => {
+  activeTab.value = name;
 
+  if (name == "actions") {
+    await capturePosition();
+    currentPos.value = interfaceState.originPos;
+  }
+}
 </script>
 
 <template>
@@ -138,91 +159,111 @@ const toggleInterface = () => {
         <span class="button-caption-large">{{ $t('dashboard.back') }}</span>
       </div>
 
-      <div class="{ 'collapsed-mode': interfaceState.isCollapsed }">
+<!--      <div class="{ 'collapsed-mode': interfaceState.isCollapsed }">-->
         <!-- 独立出来的列表按钮，用绝对定位 -->
         <div
-            ref="floatingButton"
-            class="icon-wrapper non-display"
-            :class="{ active: interfaceState.isCollapsed}"
+            ref="floatingPos"
+            class="icon-wrapper non-display top-m1"
             @click="toggleInterface"
         >
-          <font-awesome-icon class="icon-container" :icon="['fas', 'book']" />
-          <span >{{ $t('dashboard.courseAction.list') }}</span>
+          <font-awesome-icon class="icon-container" :icon="['fas', 'book']"/>
+          <span class="button-caption">{{ $t('dashboard.courseAction.list') }}</span>
         </div>
 
-        <transition-group name="collapse" tag="div">
-<!--          <div v-if="!interfaceState.isCollapsed" key="original">-->
-          <div key="original">
-
-        <!-- 头部信息区 -->
-        <div class="dashboard-header">
-          <h2>{{ $t('dashboard.title') }}</h2>
-          <FontAwesomeIcon :icon="['fas', 'user-circle']" class="user-avatar"/>
+        <div
+            v-if="activeTab === 'actions'"
+            class="icon-wrapper quantum-button"
+            :style="{
+              left: `${currentPos.x}px`,
+              top: `${currentPos.y}px`,
+              transform: `translate(
+                ${interfaceState.animationStart
+                  ? interfaceState.floatingPos.x - interfaceState.originPos.x
+                  : 0}px,
+                ${interfaceState.animationStart
+                  ? interfaceState.floatingPos.y - interfaceState.originPos.y
+                  : 0}px
+              )`,
+            }"
+            @click="toggleInterface"
+        >
+          <font-awesome-icon :icon="['fas', 'book']" class="icon-container"/>
+          <span class="button-caption">{{ $t('dashboard.courseAction.list') }}</span>
         </div>
 
-        <!-- 导航选项卡 -->
-        <nav class="tab-bar">
-          <button
-              v-for="tab in baseTabs"
-              :key="tab.id"
-              @click="activeTab = tab.id"
-              :class="{ 'active-tab': activeTab === tab.id }"
-              class="tab-button"
-          >
-            {{ tab.label }}
-          </button>
-        </nav>
+        <transition-group name="master-view" tag="div">
+          <div v-if="!interfaceState.isMasterViewActive" key="original">
+<!--          <div key="original">-->
 
-        <!-- 下面设置标签栏 -->
-        <transition name="fade" mode="out-in">
-          <div class="tab-content">
-            <!-- 标签栏1：个人信息 -->
-            <div v-show="activeTab === 'profile'" class="profile-section">
-              <div class="user-details">
-                <h3>{{ $t('dashboard.infos.title') }}</h3>
-                <p><span class="detail-label">{{ $t('dashboard.infos.name') }}:</span> {{ userDetails.name }}</p>
-                <p><span class="detail-label">{{ $t('dashboard.infos.email') }}:</span> {{ userDetails.email }}</p>
-                <button @click="openModal('editProfile')" class="edit-button">
-                  {{ $t('dashboard.infos.edit') }}
-                </button>
-              </div>
+            <!-- 头部信息区 -->
+            <div class="dashboard-header">
+              <h2>{{ $t('dashboard.title') }}</h2>
+              <FontAwesomeIcon :icon="['fas', 'user-circle']" class="user-avatar"/>
             </div>
 
-            <!-- 标签栏2：用户功能区 -->
-            <!-- 根据身份判断显示不同的专属功能+通用功能 -->
-            <div v-show="activeTab === 'actions'" id="course-section" class="action">
-              <div v-if="isTeacher" class="icon-wrapper " @click="openModal('createCourse')">
-                <font-awesome-icon :icon="['fas', 'folder-plus']" class="icon-container"/>
-                <span class="button-caption">{{ $t('dashboard.courseAction.create') }}</span>
-              </div>
-<!--              <transition name="flying-button" mode="out-in">-->
-              <div class="icon-wrapper" id="list-button" ref="originalButton" @click="toggleInterface"
-                   :class="{ 'flying': interfaceState.isCollapsed }">
-                <font-awesome-icon :icon="['fas', 'book']" class="icon-container"/>
-                <span class="button-caption">{{ $t('dashboard.courseAction.list') }}</span>
-              </div>
-<!--              </transition>-->
-            </div>
+            <!-- 导航选项卡 -->
+            <nav class="tab-bar">
+              <button
+                  v-for="tab in baseTabs"
+                  :key="tab.id"
+                  @click="clickActiveTab(tab.id)"
+                  :class="{ 'active-tab': activeTab === tab.id }"
+                  class="tab-button"
+              >
+                {{ tab.label }}
+              </button>
+            </nav>
 
-            <!-- 标签栏3：系统功能区 -->
-            <div v-show="activeTab === 'settings'" id="system-settings" class="action">
-              <div class="icon-wrapper" @click="changeLanguage">
-                <font-awesome-icon :icon="['fas', 'language']" class="icon-container"/>
-                <span class="button-caption">{{ $t('dashboard.switchLanguageButton') }}</span>
+            <!-- 下面设置标签栏 -->
+            <transition name="fade" mode="out-in">
+              <div class="tab-content">
+                <!-- 标签栏1：个人信息 -->
+                <div v-show="activeTab === 'profile'" class="profile-section">
+                  <div class="user-details">
+                    <h3>{{ $t('dashboard.infos.title') }}</h3>
+                    <p><span class="detail-label">{{ $t('dashboard.infos.name') }}:</span> {{ userDetails.name }}</p>
+                    <p><span class="detail-label">{{ $t('dashboard.infos.email') }}:</span> {{ userDetails.email }}
+                    </p>
+                    <button @click="openModal('editProfile')" class="edit-button">
+                      {{ $t('dashboard.infos.edit') }}
+                    </button>
+                  </div>
+                </div>
+
+                <!-- 标签栏2：用户功能区 -->
+                <!-- 根据身份判断显示不同的专属功能+通用功能 -->
+                <div v-show="activeTab === 'actions'" id="course-section" class="action">
+                  <div v-if="isTeacher" class="icon-wrapper " @click="openModal('createCourse')">
+                    <font-awesome-icon :icon="['fas', 'folder-plus']" class="icon-container"/>
+                    <span class="button-caption">{{ $t('dashboard.courseAction.create') }}</span>
+                  </div>
+                  <!--              <transition name="flying-button" mode="out-in">-->
+                  <div class="icon-wrapper non-display" id="list-button" ref="originalPos" @click="toggleInterface">
+                    <font-awesome-icon :icon="['fas', 'book']" class="icon-container"/>
+                    <span class="button-caption">{{ $t('dashboard.courseAction.list') }}</span>
+                  </div>
+                  <!--              </transition>-->
+                </div>
+
+                <!-- 标签栏3：系统功能区 -->
+                <div v-show="activeTab === 'settings'" id="system-settings" class="action">
+                  <div class="icon-wrapper" @click="changeLanguage">
+                    <font-awesome-icon :icon="['fas', 'language']" class="icon-container"/>
+                    <span class="button-caption">{{ $t('dashboard.switchLanguageButton') }}</span>
+                  </div>
+                  <div class="icon-wrapper" @click="logout">
+                    <font-awesome-icon :icon="['fas', 'right-from-bracket']" class="icon-container"/>
+                    <span class="button-caption">{{ $t('dashboard.logout') }}</span>
+                  </div>
+                </div>
               </div>
-              <div class="icon-wrapper" @click="logout" >
-                <font-awesome-icon :icon="['fas', 'right-from-bracket']" class="icon-container"/>
-                <span class="button-caption">{{ $t('dashboard.logout') }}</span>
-              </div>
-            </div>
-          </div>
-        </transition>
+            </transition>
           </div>
         </transition-group>
-      </div>
+<!--      </div>-->
 
       <!-- 课程列表组件 -->
-      <transition name="fade-scale">
+      <transition name="course-list">
         <CourseList v-if="interfaceState.listVisible" @close="toggleInterface"/>
       </transition>
 
@@ -298,6 +339,11 @@ html, body {
   text-decoration: none;
 }
 
+.quantum-button {
+  position: absolute;
+  z-index: 100; /* 确保能点到 */
+}
+
 
 .user-avatar {
   margin: 4% 0 3% 0;
@@ -338,10 +384,14 @@ html, body {
   place-items: center;
 }
 
-.non-display{
+.non-display {
   opacity: 0;
   visibility: hidden;
   position: absolute;
+}
+
+.top-m1 {
+  margin-top: 1rem;
 }
 
 
@@ -352,7 +402,7 @@ html, body {
 }*/
 
 /* 动画部分 */
-/*.fade-enter-active,
+.fade-enter-active,
 .fade-leave-active {
   transition: opacity .3s ease;
 }
@@ -360,50 +410,45 @@ html, body {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-}*/
-
-.flying {
-  /* 魔法变形指令 */
-  transform: translate(-30vw, -30vh);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* 主体内容消失动画 */
-#list-button{
-  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.flying-button-leave-active {
-  /*transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);*/
-  transition: all 0.5s ease-out;
-  position: fixed;
-  z-index: 999; /* 确保在最上层运动 */
-}
-
-.flying-button-leave-to {
-  /*transform: translate(calc(-30vw + 120px), -30vh) scale(0.6);*/
-  transform: translate(-50%, -30vh) scale(0.6);
-  opacity: 0.5;
-}
-
-
-/*.collapse-leave-active {
-  transition: all 1s ease-out;
+/* 主体内容动画 */
+/*.master-view-leave-active {
+  transition: all 0.6s cubic-bezier(0.68, -0.6, 0.32, 1.6);
   position: absolute;
-  !*width: 100%;*!
 }
-.collapse-leave-to {
+.master-view-leave-to {
   opacity: 0.5;
-  transform: translateX(100%);
-  !*transform: translate(-50%,-50%)*!
+  transform: translate(35vw,20vh);
+}
+
+.master-view-enter-active {
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  !*position: absolute;*!
+  right:30vw;
+  bottom:30vh;
+}
+.master-view-enter-from {
+  opacity: 0.5;
+  transform: translate(35vw,20vh);
 }*/
 
-/* 课程列表入场动画 */
-.slide-fade-enter-active {
+/* 课程列表动画 */
+/*.course-list-enter-active {
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.slide-fade-enter-from {
+
+.course-list-enter-from {
   opacity: 0;
-  transform: translateX(100%);
+  transform: translateY(-100%);
 }
+
+.course-list-leave-active {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.course-list-leave-to {
+  opacity: 0;
+  transform: translateY(-100%);
+}*/
 </style>

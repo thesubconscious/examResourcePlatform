@@ -3,7 +3,9 @@ package com.e_r_platform.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.e_r_platform.controller.Authorization.JwtHandler;
 import com.e_r_platform.mapper.UserMapper;
+import com.e_r_platform.model.Course;
 import com.e_r_platform.model.User;
+import com.e_r_platform.service.impl.CourseStudentsServiceImpl;
 import com.e_r_platform.service.impl.UserServiceImpl;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +32,8 @@ import java.util.Map;
 public class UserController {
     @Autowired
     private UserServiceImpl userService;
+    @Autowired
+    private CourseStudentsServiceImpl courseStudentsService;
     @Autowired
     private JwtHandler jwtHandler;
 

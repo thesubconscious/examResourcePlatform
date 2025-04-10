@@ -48,14 +48,13 @@ public class CourseController {
             return ResponseEntity.badRequest().body("This course is not found.");
     }
 
-    @PostMapping("/students/{student_id}")
+    @GetMapping("/students/{student_id}")
     public ResponseEntity<?> handleGetAllCourseForStudent(@PathVariable int student_id){
-//        logger.info("here");
-        ArrayList<CourseStudents> list = courseStudentsService.getAllCourses(student_id);
+        ArrayList<Course> list = courseStudentsService.getAllCourses(student_id);
         if(list!=null)
             return ResponseEntity.ok(list);
         else
-            return ResponseEntity.badRequest().body("There is no course for this student.");
+            return ResponseEntity.notFound().build();
     }
 
     @PostMapping

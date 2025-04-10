@@ -60,7 +60,7 @@
             u.user_id AS teacher_id,
             u.name AS teacher_name
         FROM course c
-                 JOIN user u ON c.teacher_id = u.user_id
+        JOIN user u ON c.teacher_id = u.user_id
     </select>
 
     <select id="getOne" resultType="com.e_r_platform.model.Course">
