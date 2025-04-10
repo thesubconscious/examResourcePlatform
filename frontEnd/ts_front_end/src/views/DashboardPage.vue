@@ -34,6 +34,8 @@ const userDetails = ref({
 const modalType = ref('')
 const message = ref()
 const showModal = ref(false)
+const showTitle = ref(false)
+const showContent = ref(false)
 const activeTab = ref('profile')
 const baseTabs = computed(() => [
   {id: 'profile', label: t('dashboard.tabs.profile')},
@@ -95,7 +97,7 @@ const jumpToPage = (event: MouseEvent, routeName: string) => {
 
 // 新增返回状态控制
 const interfaceState = reactive({
-  isMasterViewActive: false,
+  isMasterViewInactive: false,
   listVisible: false,
   animationStart: false,
   originPos: {x: 0, y: 0},
@@ -103,7 +105,7 @@ const interfaceState = reactive({
 })
 const originalPos = ref<HTMLElement>()
 const floatingPos = ref<HTMLElement>()
-const currentPos = ref({ x:0, y:0 })
+const currentPos = ref({x: 0, y: 0})
 const capturePosition = async () => {
   await nextTick()
   if (!floatingPos.value || !originalPos.value) return
@@ -126,17 +128,27 @@ const capturePosition = async () => {
 }
 
 const toggleInterface = () => {
-  if (interfaceState.isMasterViewActive) {
-    interfaceState.listVisible = false
-    interfaceState.animationStart = false
+  if (interfaceState.isMasterViewInactive) {
+    showContent.value = false
+    showTitle.value = false
     setTimeout(() => {
-      interfaceState.isMasterViewActive = false
-    }, 600)  // 等动画完成
+      interfaceState.listVisible = false
+      interfaceState.animationStart = false
+      setTimeout(() => {
+        interfaceState.isMasterViewInactive = false
+      }, 600)  // 等动画完成
+    }, 500)
+
   } else {
-    interfaceState.isMasterViewActive = true
+    interfaceState.isMasterViewInactive = true
     interfaceState.animationStart = true
     setTimeout(() => {
       interfaceState.listVisible = true
+
+      showTitle.value = true
+      setTimeout(() => {
+        showContent.value = true
+      }, 500);
     }, 600) // 等动画完成
   }
 }
@@ -159,21 +171,21 @@ const clickActiveTab = async (name: string) => {
         <span class="button-caption-large">{{ $t('dashboard.back') }}</span>
       </div>
 
-<!--      <div class="{ 'collapsed-mode': interfaceState.isCollapsed }">-->
-        <!-- 独立出来的列表按钮，用绝对定位 -->
-        <div
-            ref="floatingPos"
-            class="icon-wrapper non-display top-m1"
-            @click="toggleInterface"
-        >
-          <font-awesome-icon class="icon-container" :icon="['fas', 'book']"/>
-          <span class="button-caption">{{ $t('dashboard.courseAction.list') }}</span>
-        </div>
+      <!--      <div class="{ 'collapsed-mode': interfaceState.isCollapsed }">-->
+      <!-- 独立出来的列表按钮，用绝对定位 -->
+      <div
+          ref="floatingPos"
+          class="icon-wrapper non-display top-m1"
+          @click="toggleInterface"
+      >
+        <font-awesome-icon class="icon-container" :icon="['fas', 'book']"/>
+        <span class="button-caption">{{ $t('dashboard.courseAction.list') }}</span>
+      </div>
 
-        <div
-            v-if="activeTab === 'actions'"
-            class="icon-wrapper quantum-button"
-            :style="{
+      <div
+          v-if="activeTab === 'actions'"
+          class="icon-wrapper quantum-button"
+          :style="{
               left: `${currentPos.x}px`,
               top: `${currentPos.y}px`,
               transform: `translate(
@@ -185,86 +197,86 @@ const clickActiveTab = async (name: string) => {
                   : 0}px
               )`,
             }"
-            @click="toggleInterface"
-        >
-          <font-awesome-icon :icon="['fas', 'book']" class="icon-container"/>
-          <span class="button-caption">{{ $t('dashboard.courseAction.list') }}</span>
-        </div>
+          @click="toggleInterface"
+      >
+        <font-awesome-icon :icon="['fas', 'book']" class="icon-container"/>
+        <span class="button-caption">{{ $t('dashboard.courseAction.list') }}</span>
+      </div>
 
-        <transition-group name="master-view" tag="div">
-          <div v-if="!interfaceState.isMasterViewActive" key="original">
-<!--          <div key="original">-->
+      <transition-group name="master-view" tag="div">
+        <div v-if="!interfaceState.isMasterViewInactive" key="original">
+          <!--          <div key="original">-->
 
-            <!-- 头部信息区 -->
-            <div class="dashboard-header">
-              <h2>{{ $t('dashboard.title') }}</h2>
-              <FontAwesomeIcon :icon="['fas', 'user-circle']" class="user-avatar"/>
-            </div>
+          <!-- 头部信息区 -->
+          <div class="dashboard-header">
+            <h2>{{ $t('dashboard.title') }}</h2>
+            <FontAwesomeIcon :icon="['fas', 'user-circle']" class="user-avatar"/>
+          </div>
 
-            <!-- 导航选项卡 -->
-            <nav class="tab-bar">
-              <button
-                  v-for="tab in baseTabs"
-                  :key="tab.id"
-                  @click="clickActiveTab(tab.id)"
-                  :class="{ 'active-tab': activeTab === tab.id }"
-                  class="tab-button"
-              >
-                {{ tab.label }}
-              </button>
-            </nav>
+          <!-- 导航选项卡 -->
+          <nav class="tab-bar">
+            <button
+                v-for="tab in baseTabs"
+                :key="tab.id"
+                @click="clickActiveTab(tab.id)"
+                :class="{ 'active-tab': activeTab === tab.id }"
+                class="tab-button"
+            >
+              {{ tab.label }}
+            </button>
+          </nav>
 
-            <!-- 下面设置标签栏 -->
-            <transition name="fade" mode="out-in">
-              <div class="tab-content">
-                <!-- 标签栏1：个人信息 -->
-                <div v-show="activeTab === 'profile'" class="profile-section">
-                  <div class="user-details">
-                    <h3>{{ $t('dashboard.infos.title') }}</h3>
-                    <p><span class="detail-label">{{ $t('dashboard.infos.name') }}:</span> {{ userDetails.name }}</p>
-                    <p><span class="detail-label">{{ $t('dashboard.infos.email') }}:</span> {{ userDetails.email }}
-                    </p>
-                    <button @click="openModal('editProfile')" class="edit-button">
-                      {{ $t('dashboard.infos.edit') }}
-                    </button>
-                  </div>
-                </div>
-
-                <!-- 标签栏2：用户功能区 -->
-                <!-- 根据身份判断显示不同的专属功能+通用功能 -->
-                <div v-show="activeTab === 'actions'" id="course-section" class="action">
-                  <div v-if="isTeacher" class="icon-wrapper " @click="openModal('createCourse')">
-                    <font-awesome-icon :icon="['fas', 'folder-plus']" class="icon-container"/>
-                    <span class="button-caption">{{ $t('dashboard.courseAction.create') }}</span>
-                  </div>
-                  <!--              <transition name="flying-button" mode="out-in">-->
-                  <div class="icon-wrapper non-display" id="list-button" ref="originalPos" @click="toggleInterface">
-                    <font-awesome-icon :icon="['fas', 'book']" class="icon-container"/>
-                    <span class="button-caption">{{ $t('dashboard.courseAction.list') }}</span>
-                  </div>
-                  <!--              </transition>-->
-                </div>
-
-                <!-- 标签栏3：系统功能区 -->
-                <div v-show="activeTab === 'settings'" id="system-settings" class="action">
-                  <div class="icon-wrapper" @click="changeLanguage">
-                    <font-awesome-icon :icon="['fas', 'language']" class="icon-container"/>
-                    <span class="button-caption">{{ $t('dashboard.switchLanguageButton') }}</span>
-                  </div>
-                  <div class="icon-wrapper" @click="logout">
-                    <font-awesome-icon :icon="['fas', 'right-from-bracket']" class="icon-container"/>
-                    <span class="button-caption">{{ $t('dashboard.logout') }}</span>
-                  </div>
+          <!-- 下面设置标签栏 -->
+          <transition name="fade" mode="out-in">
+            <div class="tab-content">
+              <!-- 标签栏1：个人信息 -->
+              <div v-show="activeTab === 'profile'" class="profile-section">
+                <div class="user-details">
+                  <h3>{{ $t('dashboard.infos.title') }}</h3>
+                  <p><span class="detail-label">{{ $t('dashboard.infos.name') }}:</span> {{ userDetails.name }}</p>
+                  <p><span class="detail-label">{{ $t('dashboard.infos.email') }}:</span> {{ userDetails.email }}
+                  </p>
+                  <button @click="openModal('editProfile')" class="edit-button">
+                    {{ $t('dashboard.infos.edit') }}
+                  </button>
                 </div>
               </div>
-            </transition>
-          </div>
-        </transition-group>
-<!--      </div>-->
+
+              <!-- 标签栏2：用户功能区 -->
+              <!-- 根据身份判断显示不同的专属功能+通用功能 -->
+              <div v-show="activeTab === 'actions'" id="course-section" class="action">
+                <div v-if="isTeacher" class="icon-wrapper " @click="openModal('createCourse')">
+                  <font-awesome-icon :icon="['fas', 'folder-plus']" class="icon-container"/>
+                  <span class="button-caption">{{ $t('dashboard.courseAction.create') }}</span>
+                </div>
+                <!--              <transition name="flying-button" mode="out-in">-->
+                <div class="icon-wrapper non-display" id="list-button" ref="originalPos" @click="toggleInterface">
+                  <font-awesome-icon :icon="['fas', 'book']" class="icon-container"/>
+                  <span class="button-caption">{{ $t('dashboard.courseAction.list') }}</span>
+                </div>
+                <!--              </transition>-->
+              </div>
+
+              <!-- 标签栏3：系统功能区 -->
+              <div v-show="activeTab === 'settings'" id="system-settings" class="action">
+                <div class="icon-wrapper" @click="changeLanguage">
+                  <font-awesome-icon :icon="['fas', 'language']" class="icon-container"/>
+                  <span class="button-caption">{{ $t('dashboard.switchLanguageButton') }}</span>
+                </div>
+                <div class="icon-wrapper" @click="logout">
+                  <font-awesome-icon :icon="['fas', 'right-from-bracket']" class="icon-container"/>
+                  <span class="button-caption">{{ $t('dashboard.logout') }}</span>
+                </div>
+              </div>
+            </div>
+          </transition>
+        </div>
+      </transition-group>
+      <!--      </div>-->
 
       <!-- 课程列表组件 -->
       <transition name="course-list">
-        <CourseList v-if="interfaceState.listVisible" @close="toggleInterface"/>
+        <CourseList v-if="interfaceState.listVisible" :show-title="showTitle" :show-content="showContent"/>
       </transition>
 
       <div v-if="showModal">
@@ -433,22 +445,4 @@ html, body {
   transform: translate(35vw,20vh);
 }*/
 
-/* 课程列表动画 */
-/*.course-list-enter-active {
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.course-list-enter-from {
-  opacity: 0;
-  transform: translateY(-100%);
-}
-
-.course-list-leave-active {
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.course-list-leave-to {
-  opacity: 0;
-  transform: translateY(-100%);
-}*/
 </style>

@@ -5,16 +5,21 @@ import {useRouter} from "vue-router";
 
 const router = useRouter();
 
-const showTitle = ref(false)
-const showContent = ref(false)
+const props = defineProps({
+  showTitle: Boolean,
+  showContent: Boolean,
+})
+
+// const showTitle = ref(false)
+// const showContent = ref(false)
 const courseList = ref<Course[]>([])
 
 onMounted(async () => {
-  showTitle.value = true;
-
-  setTimeout(() => {
-    showContent.value = true
-  }, 500);
+  // showTitle.value = true;
+  //
+  // setTimeout(() => {
+  //   showContent.value = true
+  // }, 500);
 
   const student_id = localStorage.getItem('userId');
   if (student_id) {
@@ -37,24 +42,27 @@ const jumpToPage = (event: MouseEvent, routeName: string, courseId: number) => {
 </script>
 
 <template>
-  <transition name="course-list" mode="out-in">
-    <div
-        v-if="showTitle"
-        class="moving-box"
-    >
-      {{ '测试标题' }}
-    </div>
-  </transition>
+  <div class="container">
+    <transition name="course-title" mode="out-in">
+      <div
+          v-if="showTitle"
+      >
+        {{ '学习' }}
+        {{ '教学' }}
+      </div>
+    </transition>
 
-  <div v-if="showContent" class="coursesList">
-    <div
-        v-for="course in courseList"
-        :key="course.course_id"
-        class="course-item"
-        @click="jumpToPage($event, 'CourseDetailPage', course.course_id)"
-    >
-      <img :src="'/src/assets'+course.img_path" alt="">
-      {{ course.name }} - {{ course.teacher.name }}
+    <div v-if="showContent" class="coursesList">
+      <div
+          v-for="course in courseList"
+          :key="course.course_id"
+          class="course-item"
+          @click="jumpToPage($event, 'CourseDetailPage', course.course_id)"
+      >
+        <img :src="'/src/assets'+course.img_path" alt="">
+        {{ course.name }} - {{ course.teacher.name }}
+      </div>
+
     </div>
 
   </div>
@@ -77,21 +85,54 @@ const jumpToPage = (event: MouseEvent, routeName: string, courseId: number) => {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.course-list-enter-active {
+.course-title-enter-active {
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.course-list-enter-from {
+.course-title-enter-from {
   opacity: 0;
   transform: translateY(-100%);
 }
 
-.course-list-leave-active {
+.course-title-leave-active {
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.course-list-leave-to {
+.course-title-leave-to {
   opacity: 0;
   transform: translateY(-100%);
+}
+
+
+.coursesList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+
+  background: white;
+  /*border-radius: 12px;*/
+  padding: 0.5rem;
+  /*box-shadow: 0 2px 8px rgba(0,0,0,0.1);*/
+}
+
+.course-item {
+  border: 1px solid #e4e7ed;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.course-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.course-item img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 12px;
 }
 </style>
