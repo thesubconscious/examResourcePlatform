@@ -130,7 +130,9 @@ const capturePosition = async () => {
 const toggleInterface = () => {
   if (interfaceState.isMasterViewInactive) {
     showContent.value = false
-    showTitle.value = false
+    setTimeout(() => {
+      showTitle.value = false
+    }, 300)
     setTimeout(() => {
       interfaceState.listVisible = false
       interfaceState.animationStart = false
