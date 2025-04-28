@@ -1,8 +1,8 @@
 package com.e_r_platform.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.e_r_platform.model.Course;
 import com.e_r_platform.model.CourseStudents;
-import com.e_r_platform.model.User;
 import com.e_r_platform.service.CourseStudentsService;
 import com.e_r_platform.mapper.CourseStudentsMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +22,13 @@ public class CourseStudentsServiceImpl extends ServiceImpl<CourseStudentsMapper,
     @Autowired
     private CourseStudentsMapper courseStudentsMapper;
 
-    public ArrayList<CourseStudents> getAll(int course_id){
+    public ArrayList<CourseStudents> getAllStudents(int course_id){
         ArrayList<CourseStudents> list = courseStudentsMapper.getAllByCourseId(course_id);
+        return list;
+    }
+
+    public ArrayList<Course> getAllCourses(int student_id){
+        ArrayList<Course> list = courseStudentsMapper.getAllByStudentId(student_id);
         return list;
     }
 

@@ -5,10 +5,13 @@
 <mapper namespace="com.e_r_platform.mapper.ResourceMapper">
 
     <resultMap id="BaseResultMap" type="com.e_r_platform.model.Resource">
-            <id property="resource_id" column="resource_id" jdbcType="INTEGER"/>
-            <result property="course_id" column="course_id" jdbcType="INTEGER"/>
-            <result property="name" column="name" jdbcType="VARCHAR"/>
-            <result property="path" column="path" jdbcType="VARCHAR"/>
+        <id column="node_id" property="node_id"/>
+        <result column="course_id" property="course_id"/>
+        <result column="parent_node_id" property="parent_node_id"/>
+        <result column="type" property="type"/>
+        <result column="title" property="title"/>
+        <result column="file_uri" property="file_uri"/>
+        <result column="display_order" property="display_order"/>
     </resultMap>
 
 <!--    <sql id="Base_Column_List">-->
@@ -16,19 +19,67 @@
 <!--        path-->
 <!--    </sql>-->
 
-    <insert id="insertOne">
-        insert into resource(course_id, name, path) value (#{course_id},#{name},#{path})
+    <insert id="insertResource" useGeneratedKeys="true">
+        INSERT INTO resource
+            (course_id, parent_node_id, type, title, file_uri, display_order)
+        VALUES
+            (#{course_id}, #{parent_node_id}, #{type}, #{title}, #{file_uri}, #{display_order})
     </insert>
-    <delete id="deleteByResourceId">
-        delete from resource where resource_id = #{resource_id}
+
+    <update id="updateResource" parameterType="com.e_r_platform.model.Resource">
+        UPDATE resource
+        <set>
+            <if test="courseId != null">course_id = #{course_id},</if>
+            <if test="parentNodeId != null">parent_node_id = #{parent_node_id},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="title != null">title = #{title},</if>
+            <if test="fileUri != null">file_uri = #{file_uri},</if>
+            <if test="displayOrder != null">display_order = #{display_order}</if>
+        </set>
+        WHERE node_id = #{node_id}
+    </update>
+
+    <update id="decrementOrderAfterDelete">
+        UPDATE resource SET
+                            display_order = display_order - 1
+        WHERE parent_node_id = #{parentId} AND display_order > #{deletedOrder}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM resource WHERE node_id = #{nodeId}
     </delete>
 
-    <select id="searchAllByResourceId" resultType="com.e_r_platform.model.Resource">
-        select * from resource where resource_id = #{resource_id}
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM resource WHERE node_id = #{nodeId}
     </select>
 
-    <select id="getAllByCourseId" resultType="com.e_r_platform.model.Resource">
-        select * from resource where course_id = #{course_id}
+    <select id="selectChildren" resultMap="BaseResultMap">
+        SELECT * FROM resource
+        WHERE parent_node_id = #{parentId}
+        ORDER BY display_order ASC
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT * FROM resource
+        WHERE course_id = #{course_id}
+        ORDER BY display_order ASC
+    </select>
+
+    <select id="selectChapters" resultMap="BaseResultMap">
+        SELECT * FROM resource
+        WHERE course_id = #{course_id}
+          and type = 'CHAPTER'
+        ORDER BY display_order ASC
+    </select>
+
+    <select id="selectMaxOrderForChapter" resultType="Integer">
+        SELECT COALESCE(MAX(display_order), 0) FROM resource
+        WHERE course_id = #{parentId}
+    </select>
+
+    <select id="selectMaxOrderForLeaf" resultType="Integer">
+        SELECT COALESCE(MAX(display_order), 0) FROM resource
+        WHERE parent_node_id = #{parentId}
     </select>
 
 </mapper>

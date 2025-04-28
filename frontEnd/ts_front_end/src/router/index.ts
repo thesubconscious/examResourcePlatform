@@ -1,10 +1,10 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import LoginPage from "@/views/LoginPage.vue";
-import RegisterPage from "@/views/RegisterPage.vue";
+import { createRouter, createWebHistory,createWebHashHistory } from 'vue-router'
 import HomePage from "@/views/HomePage.vue";
+import DashboardPage from "@/views/DashboardPage.vue";
+import MainPage from "@/views/MainPage.vue";
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
@@ -12,14 +12,20 @@ const router = createRouter({
       component: HomePage
     },
     {
-      path: '/login',
-      name: 'login',
-      component: LoginPage
+      path: '/Main',
+      name: 'Main',
+      component: MainPage
     },
     {
-      path: '/register',
-      name: 'register',
-      component: RegisterPage
+      path: '/Dashboard',
+      name: 'Dashboard',
+      component: DashboardPage
+    },
+    {
+      path: '/courses/:id',
+      name: 'CourseDetailPage',
+      component: () => import('@/views/CourseDetailPage.vue'),
+      props: true
     },
   ]
 })

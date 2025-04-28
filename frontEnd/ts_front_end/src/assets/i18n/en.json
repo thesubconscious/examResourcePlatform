@@ -1,0 +1,29 @@
+{
+  "dashboard": {
+    "back": "Back to main page",
+    "title": "Profile",
+    "tabs": {
+      "profile": "Profile",
+      "actions": "Actions",
+      "settings": "Settings"
+    },
+    "infos": {
+      "title": "Personal Information",
+      "name": "Name",
+      "email": "Email",
+      "edit": "Edit"
+    },
+    "courseAction": {
+      "create": "Create new course",
+      "list": "List courses"
+    },
+    "switchLanguageButton": "Switch language",
+    "logout": "Logout"
+  },
+  "main": {
+    "title": "title",
+    "nav": {
+      "title": "Filter"
+    }
+  }
+}

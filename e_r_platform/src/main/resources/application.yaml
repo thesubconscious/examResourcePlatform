@@ -1,10 +1,15 @@
 spring:
+#  main:
+#    web-application-type: SERVLET
   application:
     name: e_r_platform
   datasource:
-    url: jdbc:mysql://localhost:3306/e_r_platform?useSSL=false
-    username: root
-    password: 7k7kxyx@
+#    url: jdbc:mysql://localhost:3306/e_r_platform?useSSL=false
+#    username: silence
+#    password: 7k7kxyx
+    url: jdbc:mysql://1.94.115.38:3306/e_r_platform?useSSL=false
+    username: silence
+    password: 7k7kxyx
     driver-class-name: com.mysql.cj.jdbc.Driver
   sql:
     init:

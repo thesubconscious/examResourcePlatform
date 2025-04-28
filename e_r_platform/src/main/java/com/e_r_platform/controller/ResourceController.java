@@ -1,6 +1,7 @@
 package com.e_r_platform.controller;
 
 import com.e_r_platform.model.Resource;
+import com.e_r_platform.model.User;
 import com.e_r_platform.service.impl.ResourceServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -19,9 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/courses/{id}/resources")
@@ -30,13 +29,14 @@ public class ResourceController {
     private ResourceServiceImpl resourceService;
 
     @PostMapping
-    public ResponseEntity<?> handleFileUpload(@PathVariable int id, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<?> handleFileUpload(@RequestPart("resource") Resource resource,
+                                              @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
-            Resource resource = resourceService.uploadFile(id, file);
+            Resource res = resourceService.createResource(resource, file);
 
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put("message", "Resource upload successfully.");
-            responseBody.put("resource_id", resource.getResource_id());
+            responseBody.put("resource_id", res.getNode_id());
             return ResponseEntity.ok(responseBody);
 
         } catch (IllegalArgumentException e) {
@@ -57,7 +57,7 @@ public class ResourceController {
     }
 
     @GetMapping("/{resource_id}")
-    public ResponseEntity<?> handleFileDownload(@PathVariable int resource_id) {
+    public ResponseEntity<?> handleFileDownload(@RequestBody int resource_id) {
         try {
             File file = resourceService.downloadFile(resource_id);
             Path filePath = Paths.get(file.getAbsolutePath());
@@ -77,26 +77,12 @@ public class ResourceController {
         }
     }
 
-    @GetMapping
-    public ResponseEntity<?> handleGetAllResourcesByCouseID(@PathVariable int id){
-        ArrayList<Resource> list = resourceService.getAllResourcesByCourseID(id);
-        if(list.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("There is no resource");
-        }
-        else{
-            return ResponseEntity.ok(list);
-        }
-    }
-
     @DeleteMapping("/{resource_id}")
-    public ResponseEntity<?> handleFileDelete(@PathVariable int resource_id) {
+    public ResponseEntity<?> handleFileDelete(@RequestBody int resource_id) {
         try {
-            if(resourceService.deleteFile(resource_id)){
-                return ResponseEntity.ok("Resource deleted successfully");
-            }else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete resource");
-            }
-        } catch (FileNotFoundException e) {
+            resourceService.deleteResource(resource_id);
+            return ResponseEntity.ok("Resource deleted successfully");
+        } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -105,4 +91,25 @@ public class ResourceController {
         }
     }
 
+    @GetMapping
+    public ResponseEntity<?> handleGetAllResourcesByCouseID(@PathVariable int id){
+        List<Resource> list = resourceService.getAll(id);
+        if(list.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("There is no resource");
+        }
+        else{
+            return ResponseEntity.ok(list);
+        }
+    }
+
+    @GetMapping("/chapters")
+    public ResponseEntity<?> handleGetAllChaptersByCouseID(@PathVariable int id){
+        List<Resource> list = resourceService.getAllChapters(id);
+        if(list.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("There is no resource");
+        }
+        else{
+            return ResponseEntity.ok(list);
+        }
+    }
 }

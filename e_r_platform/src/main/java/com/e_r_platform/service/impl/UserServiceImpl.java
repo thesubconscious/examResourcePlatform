@@ -1,17 +1,15 @@
 package com.e_r_platform.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.e_r_platform.controller.JwtHandler;
+import com.e_r_platform.controller.Authorization.JwtHandler;
 import com.e_r_platform.model.User;
 import com.e_r_platform.service.UserService;
 import com.e_r_platform.mapper.UserMapper;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -33,25 +31,54 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Autowired
     private CustomUserDetailService userDetailService;
 
-    User checkUserStorage(User user){
-        String cacheKey = "user:" + user.getUser_id();
-        User existedUser = (User)redisTemplate.opsForValue().get(cacheKey);
-        if (existedUser == null) {
-            Optional<User> optionalUser = userMapper.selectUserByEmail(user.getEmail());
-            if (optionalUser.isPresent()) {
-                existedUser = optionalUser.get();
-                redisTemplate.opsForValue().set(cacheKey, existedUser); // 重新缓存数据
-            }
-        }
-        return existedUser;
+//    User checkUserStorage(User user){
+//        String cacheKey = "user:" + user.getEmail();
+//        User existedUser = (User)redisTemplate.opsForValue().get(cacheKey);
+//        if (existedUser == null) {
+//            Optional<User> optionalUser = userMapper.selectUserByEmail(user.getEmail());
+//            if (optionalUser.isPresent()) {
+//                existedUser = optionalUser.get();
+//                redisTemplate.opsForValue().set(cacheKey, existedUser); // 重新缓存数据
+//            }
+//        }
+//        User
+//        return existedUser;
+//    }
+
+    public ResponseCookie setCookie(String name, String value, Boolean httpOnly, String path, int maxAge) {
+        return ResponseCookie.from(name, value)
+                .path(path)
+                .maxAge(maxAge)
+                .httpOnly(httpOnly)
+//                .sameSite("None")
+//                .secure(true)
+                .build();
+    }
+    public ResponseCookie setCookie(String name, String value) {
+        return setCookie(name, value, false,"/", 60 * 60 * 24);
+    }
+    public ResponseCookie setCookie(String name, String value, Boolean httpOnly) {
+        return setCookie(name, value, httpOnly,"/", 60 * 60 * 24);
+    }
+
+    public ResponseCookie deleteCookie(String name, String path, Boolean httpOnly) {
+        return ResponseCookie.from(name, "")
+                .path(path)
+                .maxAge(0) // 设置maxAge为0表示删除Cookie
+                .httpOnly(httpOnly)
+//                .sameSite("None")
+//                .secure(true)
+                .build();
+    }
+    public ResponseCookie deleteCookie(String name) {
+        return deleteCookie(name,"/",false);
     }
 
     public int register(User user){
-        User existedUser =  checkUserStorage(user);
-        if(existedUser!=null){
+        Optional<User> existedUser =  userMapper.selectUserByEmail(user.getEmail());
+        if(existedUser.isPresent()){
             return -1;
         }
-
         String email = user.getEmail();
         String name = user.getName();
         String password = user.getPassword();
@@ -68,16 +95,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     }
 
     public void logOut(HttpServletResponse response){
-        Cookie jwtCookie = new Cookie("JWT_TOKEN", null);
-        jwtCookie.setHttpOnly(true);
-        jwtCookie.setPath("/");
-        jwtCookie.setMaxAge(0);
-        response.addCookie(jwtCookie);
+        deleteCookie("JWT_TOKEN","/",true);
+//        deleteCookie("USER_ID");
     }
 
     public User getOne(int user_id){
         User user = userMapper.selectUserByID(user_id);
         return user;
+    }
+
+    public int getUserID(String email){
+        Optional<User> user = userMapper.selectUserByEmail(email);
+        return user.get().getUser_id();
     }
 
     public int update(User user){

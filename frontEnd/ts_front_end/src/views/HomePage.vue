@@ -1,49 +1,68 @@
 <template>
   <div class="home">
-    <div class="header">
-      <FontAwesomeIcon :icon="['fas', 'user-circle']" @click="toggleMenu" class="icon"/>
-      <div v-if="menuVisible" class="menu">
-        <p @click="login()">登录</p>
-        <p @click="register()">注册</p>
-      </div>
-    </div>
-    <h1>欢迎来到考试学习资源平台</h1>
+    <Header/>
+
+    <h1>欢迎来到学习资源平台</h1>
+<!--    <h2 @click="jumpToMainPage()">点此访问主页</h2>-->
+<!--    <button @click="jumpToMainPage()" >访问主页</button>-->
+    <router-link to="Main" class="router">访问主页</router-link>
     <div class="image-container" @click="imageClicked">
-      <img src="@/assets/HomeView.jpg" alt="Shadowed Home View" class="side-image">
-      <img src="@/assets/HomeView.jpg" alt="Home View" class="main-image">
-      <img src="@/assets/HomeView.jpg" alt="Shadowed Home View" class="side-image">
+      <button @click="prevImage" class="arrow left-arrow">◀</button>
+      <img :src="images[Object.keys(images)[curr_left]].default" alt="Shadowed Home View" class="side-image">
+      <img :src="images[Object.keys(images)[curr_main]].default" alt="Home View" class="main-image">
+      <img :src="images[Object.keys(images)[curr_right]].default" alt="Shadowed Home View" class="side-image">
+      <button @click="nextImage" class="arrow right-arrow">▶</button>
     </div>
-    <div class="footer">
-      github@thesubconscious
-    </div>
+
+    <Footer/>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import {computed, ref} from 'vue';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import {useRouter} from "vue-router";
-
 library.add(faUserCircle);
+import {useRouter} from "vue-router";
+import Modal from "@/components/modal/Modal.vue";
+import Header from "@/components/basic/Header.vue";
+import Footer from "@/components/basic/Footer.vue";
 
-const menuVisible = ref(false);
 const router = useRouter()
 
-const toggleMenu = () => {
-  menuVisible.value = !menuVisible.value;
+const showModal = ref(false);
+const modalType = ref('');
+
+const images = import.meta.glob('@/assets/HomeView*.jpg', { eager: true }) as Record<string, { default: string }>;
+const imageCount = Object.keys(images).length;
+const currentImageIndex = ref(0);
+
+// 计算当前的左侧和右侧图片索引
+const curr_main = ref(currentImageIndex.value);
+const curr_left = ref((currentImageIndex.value - 1 + imageCount) % imageCount);
+const curr_right = ref((currentImageIndex.value + 1) % imageCount);
+// console.log(images[Object.keys(images)[curr_main.value]].default)
+// 更新图片索引和图片显示
+const updateImages = () => {
+  curr_main.value = currentImageIndex.value;
+  curr_left.value = (currentImageIndex.value - 1 + imageCount) % imageCount;
+  curr_right.value = (currentImageIndex.value + 1) % imageCount;
 };
 
-const login = () => {
-  router.push("/Login")
-  console.log("Login");
+const nextImage = () => {
+  currentImageIndex.value = (currentImageIndex.value + 1) % imageCount;
+  updateImages();
 };
 
-const register = () => {
-  router.push("/Register")
-  console.log("Register");
+const prevImage = () => {
+  currentImageIndex.value = (currentImageIndex.value - 1 + imageCount) % imageCount;
+  updateImages();
 };
+
+const handleModalOpen = (type: 'login' | 'register') => {
+  modalType.value = type
+  showModal.value = true
+}
 
 const imageClicked = () => {
   console.log('Image Clicked');
@@ -51,68 +70,86 @@ const imageClicked = () => {
 </script>
 
 <style scoped>
-.header, .footer {
-  position: fixed;
-  left: 0;
-  height: 3%;
-  width: 100%;
-  background-color: grey;
-  color: white;
-  text-align: center;
-  padding: 5px;
-  font-size: 14px;
-}
-.header {
-  top: 0;
-}
-.footer {
-  bottom: 0;
-}
-
 h1 {
   text-align: center;
-  margin-top: 5%;
+  margin-top: 5vh;
   font-size: 2em;
 }
 
-/* icon */
-.icon {
-  height: 80%;
-  position: absolute;
-  right: 1%;
-  top:10%;
-  cursor: pointer;
+.router {
+  display: inline-block;
+  text-align: center;
+  font-size: 1.1em;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
 }
-.menu {
-  background-color: white;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-  padding: 8px;
-  position: absolute;
-  right: 10px;
-  top: 40px;
-  color: black;
-}
-.menu p:hover {
+.router:hover {
   background-color: lightgray;
   cursor: pointer;
 }
 
+/* 箭头 */
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  z-index: 10; /* 确保箭头位于图片之上 */
+  pointer-events: auto; /* 确保箭头可以点击 */
+}
+
+.left-arrow {
+  left: 3%;
+}
+
+.right-arrow {
+  right: 3%;
+}
+
 /* 图片 */
 .image-container {
+  min-height: 60vh;
+  max-height: 100vh;
   text-align: center;
-  margin: 3% 0 3% 0;
+  margin: 3vh 0 3vh 0;
 }
 .main-image {
   max-width: 40%;
-  min-height: 60%;
+  /*min-height: 60%;*/
   height: auto;
   display: inline-block;
 }
 .side-image {
+  z-index: -1; /* 确保侧边图片在箭头下方 */
   max-width: 30%;
   height: auto;
   display: inline-block;
   opacity: 0.8;
   filter: blur(8px);
+}
+
+@media (max-width: 500px){
+  .main-image {
+    max-width: 80%;
+    min-height: 60vh;
+    height: auto;
+    display: inline-block;
+    /*opacity: 0.8;
+    filter: blur(2px);*/
+  }
+  .side-image {
+    z-index: -1; /* 确保侧边图片在箭头下方 */
+    max-width: 10%;
+    /*height: auto;*/
+    min-height: 50vh;
+    display: inline-block;
+    opacity: 0.8;
+    filter: blur(8px);
+  }
 }
 </style>

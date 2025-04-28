@@ -1,12 +1,18 @@
 package com.e_r_platform.controller;
 
 import com.e_r_platform.model.Course;
+import com.e_r_platform.model.CourseStudents;
 import com.e_r_platform.service.impl.CourseServiceImpl;
+import com.e_r_platform.service.impl.CourseStudentsServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,9 +24,14 @@ public class CourseController {
 
     @Autowired
     private CourseServiceImpl courseService;
+    @Autowired
+    private CourseStudentsServiceImpl courseStudentsService;
+
+//    private static final Logger logger = LoggerFactory.getLogger(CourseController.class);
 
     @GetMapping
     public ResponseEntity<?> handleGetAllCourse(){
+//        logger.info("here");
         ArrayList<Course> list = courseService.getAll();
         if(list!=null)
             return ResponseEntity.ok(list);
@@ -34,17 +45,29 @@ public class CourseController {
         if(course!=null)
             return ResponseEntity.ok(course);
         else
-            return ResponseEntity.badRequest().body("There is no course.");
+            return ResponseEntity.badRequest().body("This course is not found.");
+    }
+
+    @GetMapping("/students/{student_id}")
+    public ResponseEntity<?> handleGetAllCourseForStudent(@PathVariable int student_id){
+        ArrayList<Course> list = courseStudentsService.getAllCourses(student_id);
+        if(list!=null)
+            return ResponseEntity.ok(list);
+        else
+            return ResponseEntity.notFound().build();
     }
 
     @PostMapping
     public ResponseEntity<?> handleCreateCourse(@RequestBody Course course){
         int course_id = courseService.create(course);
         if(course_id > 0){
-            URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                    .path("/{id}")
-                    .buildAndExpand(course_id)
-                    .toUri();
+//            URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+//                    .path("/{id}")
+//                    .buildAndExpand(course_id)
+//                    .toUri();
+            URI location = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/courses/{id}")
+                    .build(course_id);
 
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put("message", "Course create successfully.");
@@ -60,14 +83,14 @@ public class CourseController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> handleUpdateCourse(@RequestBody Course course, @PathVariable int id){
-        course.setCourse_id(id);
-        int result = courseService.update(course);
+    public ResponseEntity<?> handleUpdateCourse(@RequestPart("course") Course course,
+                                                @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
+        int result = courseService.update(course, file);
 
         if(result!=0)
             return ResponseEntity.ok("Update success");
         else
-            return ResponseEntity.badRequest().body("Course does not exist");
+            return ResponseEntity.badRequest().body("Course id "+ course.getCourse_id() +"does not exist");
     }
 
     @DeleteMapping("/{id}")

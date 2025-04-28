@@ -1,7 +1,6 @@
 package com.e_r_platform.controller;
 
 import com.e_r_platform.model.CourseStudents;
-import com.e_r_platform.model.User;
 import com.e_r_platform.service.impl.CourseStudentsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +20,7 @@ public class CourseStudentController {
 
     @GetMapping
     public ResponseEntity<?> handleGetAllUser(@PathVariable int id){
-        ArrayList<CourseStudents> list = courseStudentsService.getAll(id);
+        ArrayList<CourseStudents> list = courseStudentsService.getAllStudents(id);
 
         if(list!=null)
             return ResponseEntity.ok(list);

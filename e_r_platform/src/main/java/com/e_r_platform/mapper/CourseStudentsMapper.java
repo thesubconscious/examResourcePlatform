@@ -1,5 +1,6 @@
 package com.e_r_platform.mapper;
 
+import com.e_r_platform.model.Course;
 import com.e_r_platform.model.CourseStudents;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.e_r_platform.model.User;
@@ -15,6 +16,8 @@ import java.util.ArrayList;
 */
 public interface CourseStudentsMapper extends BaseMapper<CourseStudents> {
     ArrayList<CourseStudents> getAllByCourseId(@Param("course_id") int course_id);
+
+    ArrayList<Course> getAllByStudentId(@Param("student_id") int student_id);
 
     CourseStudents getOne(@Param("course_id") int course_id, @Param("user_id") int user_id);
 

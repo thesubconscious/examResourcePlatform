@@ -23,7 +23,7 @@
     </select>
 
     <select id="getResourcesByCourseIDAndStudentID" resultType="com.e_r_platform.model.Resource">
-        SELECT r.resource_id, r.name, r.path, rc.completion_time
+        SELECT r.node_id, r.name, rc.completion_time
         FROM resource_completions rc
         JOIN resource r ON rc.resource_id = r.resource_id
         WHERE rc.student_id = #{student_id} AND r.course_id = #{course_id};

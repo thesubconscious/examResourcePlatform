@@ -1,0 +1,30 @@
+.icon-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px; /* 图标和文字间距 */
+
+    transition: transform 0.6s cubic-bezier(0.7, -0.55, 0.3, 1.55), background 0.3s ease;
+
+    :hover {
+        cursor: pointer;
+    }
+}
+
+.icon-container {
+    font-size: 3rem !important;
+}
+
+.icon-container-small {
+    font-size: 1.5rem !important;
+}
+
+.button-caption {
+    font-size: 0.75rem;
+    text-transform: uppercase; /* 字母大写 */
+}
+
+.button-caption-large {
+    font-size: 0.9rem;
+    text-transform: uppercase; /* 字母大写 */
+}

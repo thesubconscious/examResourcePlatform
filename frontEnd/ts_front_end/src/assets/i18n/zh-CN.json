@@ -1,0 +1,48 @@
+{
+  "dashboard": {
+    "back": "访问主页",
+    "title": "个人主页",
+    "tabs": {
+      "profile": "个人中心",
+      "actions": "功能管理",
+      "settings": "系统设置"
+    },
+    "infos": {
+      "title": "个人信息",
+      "name": "姓名",
+      "email": "邮箱",
+      "edit": "编辑个人信息"
+    },
+    "courseAction": {
+      "create": "新建课程",
+      "list": "课程列表"
+    },
+    "switchLanguageButton": "切换语言",
+    "logout": "登出"
+  },
+  "main": {
+    "title": "热门课程",
+    "more": "查看更多",
+    "nav": {
+      "title": "过滤器"
+    }
+  },
+  "createCourseForm": {
+    "title": "创建课程",
+    "form": {
+      "name": "名字：",
+      "introduction": "简介：",
+      "submit": "提交"
+    }
+  },
+  "createResourceForm": {
+    "title": "创建资源",
+    "form": {
+      "title": "节点名",
+      "typeLabel": "资源类型",
+      "chapterType": "章节",
+      "leafType": "子节点",
+      "parentChapter": "所属章节"
+    }
+  }
+}
